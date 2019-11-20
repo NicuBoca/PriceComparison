@@ -26,7 +26,7 @@ public class App
 	
     public static void main( String[] args ) throws Exception
     {
-    	testRedis();
+    	//testRedis();
     	
     	@SuppressWarnings("resource")
 		Scanner scan = new Scanner(System.in);

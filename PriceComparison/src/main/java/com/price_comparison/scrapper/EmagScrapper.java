@@ -10,6 +10,7 @@ import org.jsoup.select.Elements;
 
 import com.price_comparison.crawler.CrawlEngine;
 import com.price_comparison.dto.ProductDto;
+import com.price_comparison.types.ProductSource;
 
 public class EmagScrapper extends BaseScrapper {
 
@@ -42,29 +43,52 @@ public class EmagScrapper extends BaseScrapper {
 			for (Element prod : list) {
 				try {
 					String prodName = prod.select("div.card-section-mid h2.card-body a.product-title").text();
-					String prodPrice = prod.select("div.card-section-btm div.card-body p.product-new-price").text();
-					String prodPriceSup = prod.select("div.card-section-btm div.card-body p.product-new-price sup")
+
+					String prodPriceString = prod.select("div.card-section-btm div.card-body p.product-new-price")
 							.text();
-					prodPrice = prodPrice.replace(prodPrice.substring(prodPrice.length() - 6), "");
-					prodPrice = prodPrice + "," + prodPriceSup;
+					String prodPriceSupString = prod
+							.select("div.card-section-btm div.card-body p.product-new-price sup").text();
+					prodPriceString = prodPriceString.replace(prodPriceString.substring(prodPriceString.length() - 6),
+							"");
+					prodPriceString = prodPriceString + "," + prodPriceSupString;
+					prodPriceString = prodPriceString.replace("de la ", "");
+					prodPriceString = prodPriceString.replace(".", "");					
+					prodPriceString = prodPriceString.replace(",", ".");
+					float prodPrice = Float.parseFloat(prodPriceString);
+
 					String prodStock = prod.select("div.card-section-btm div.card-body p.product-stock-status").text();
-					if (prodStock.isEmpty()) {
-						prodStock = "resigilat";
+					int prodStockStatus;
+					if (prodStock.equals("stoc epuizat")) {
+						prodStockStatus = 0;
 					}
+					else if (prodStock.isEmpty()) {
+						prodStock = "resigilat";
+						prodStockStatus = 2;
+					}
+					else {
+						prodStockStatus = 1;
+					}
+					
+					String prodUrl = prod.select("div.card-section-mid h2.card-body a.product-title").attr("href");
+					
+					String prodImg = prod.select("div.card-section-top div.card-heading a.thumbnail-wrapper div.thumbnail img.lozad").attr("data-src");
 
 					System.out.println("---------------------------------------------------------------------");
 					System.out.println("----- Produs Emag -----");
 					System.out.println("Nume: " + prodName);
 					System.out.println("Pret: " + prodPrice + " lei");
 					System.out.println("Stoc: " + prodStock);
+					System.out.println("Status: " + prodStockStatus);
+					System.out.println("URL: " + prodUrl);
+					System.out.println("Img: " + prodImg);
 
-//					 products.add(new ProductDto(prodName, prodPrice, prodStock));
+					products.add(new ProductDto(prodName, prodPrice, prodStockStatus, prodUrl, ProductSource.EMAG, prodImg));
 
 				} catch (Exception e) {
 					System.out.println("Error Emag : " + e.getMessage());
 				}
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

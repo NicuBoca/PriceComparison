@@ -26,7 +26,7 @@ public class CrawlEngine {
 		return crawlJobs;
 	}
 
-	public void crawl(String product) throws Exception {
+	public List<ProductDto> crawl(String product) throws Exception {
 		List<BaseScrapper> crawlJobs = initCrawler(product);
 		ExecutorService executor = Executors.newFixedThreadPool(crawlJobs.size());
 		for (BaseScrapper scrapper : crawlJobs) {
@@ -36,6 +36,6 @@ public class CrawlEngine {
 		while (!executor.isTerminated()) {
 		}
 		
-		//return products;
+		return products;
 	}
 }

@@ -10,6 +10,7 @@ import org.jsoup.select.Elements;
 
 import com.price_comparison.crawler.CrawlEngine;
 import com.price_comparison.dto.ProductDto;
+import com.price_comparison.types.ProductSource;
 
 public class PcGarageScrapper extends BaseScrapper {
 
@@ -41,16 +42,38 @@ public class PcGarageScrapper extends BaseScrapper {
 			for (Element prod : list) {
 				try {
 					String prodName = prod.select("div.product-box div.pb-specs-container div.pb-name a").attr("title");
-					String prodPrice = prod.select("div.product-box div.pb-price-container div.pb-price p.price").text();
+					
+					String prodPriceString = prod.select("div.product-box div.pb-price-container div.pb-price p.price").text();
+					prodPriceString = prodPriceString.replace(prodPriceString.substring(prodPriceString.length() - 4),
+							"");
+					prodPriceString = prodPriceString.replace(".", "");					
+					prodPriceString = prodPriceString.replace(",", ".");
+					float prodPrice = Float.parseFloat(prodPriceString);
+					
 					String prodStock = prod.select("div.product-box div.pb-price-container div.pb-availability").text();
+					int prodStockStatus;
+					if (prodStock.equals("Nu este in stoc")) {
+						prodStockStatus = 0;
+					}
+					else {
+						prodStockStatus = 1;
+					}
+					
+					String prodUrl = prod.select("div.product-box div.pb-specs-container div.pb-name a").attr("href");
+					
+					Elements prodImgElem = prod.select("div.product-box div.pb-image a");
+					String prodImg = prodImgElem.select("img").attr("src");
 									
 					System.out.println("---------------------------------------------------------------------");
 					System.out.println("----- Produs PcGarage -----");
 					System.out.println("Nume: " + prodName);
 					System.out.println("Pret: " + prodPrice);
 					System.out.println("Stoc: " + prodStock);
+					System.out.println("Status: " + prodStockStatus);
+					System.out.println("URL: " + prodUrl);
+					System.out.println("Img: " + prodImg);
 
-					// products.add(new ProductDto(prodName, prodPrice, prodStock));
+					products.add(new ProductDto(prodName, prodPrice, prodStockStatus, prodUrl, ProductSource.PCGARAGE, prodImg));
 
 				} catch (Exception e) {
 					System.out.println("Error Emag : " + e.getMessage());

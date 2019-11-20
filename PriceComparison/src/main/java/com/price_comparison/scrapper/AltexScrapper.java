@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import com.price_comparison.crawler.CrawlEngine;
 import com.price_comparison.dto.ProductDto;
+import com.price_comparison.types.ProductSource;
 
 public class AltexScrapper extends BaseScrapper {
 
@@ -39,8 +40,8 @@ public class AltexScrapper extends BaseScrapper {
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			con.setRequestMethod("GET");
 			con.setRequestProperty("User-Agent", "Mozilla/5.0");
-			int responseCode = con.getResponseCode();
-			System.out.println("response code: " + responseCode);
+			//int responseCode = con.getResponseCode();
+			//System.out.println("response code: " + responseCode);
 			
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;
@@ -58,25 +59,40 @@ public class AltexScrapper extends BaseScrapper {
 			for(int i=0; i<productsArray.length(); i++) {
 				JSONObject prodItem = (JSONObject) productsArray.get(i);				
 				//System.out.println(productItem);
-				String prodName = prodItem.getString("name");
-				double prodPrice = prodItem.getDouble("price");
-				String prodStock;
-				int stockStatus = prodItem.getInt("stock_status");
 				
-				if(stockStatus == 1) {
+				String prodName = prodItem.getString("name");
+				float prodPrice = prodItem.getFloat("price");
+				
+				String prodStock;
+				int prodStockStatus = prodItem.getInt("stock_status");				
+				if(prodStockStatus == 1) {
 					prodStock = "in stoc";
 				}
 				else {
 					prodStock = "stoc epuizat";					
 				}
 				
+				String prodUrlBase = "https://altex.ro/";
+				String prodUrlPath = prodItem.getString("url_key");
+				String prodUrl = prodUrlBase + prodUrlPath;			
+				
+				String prodImgBase = "https://cdna.altex.ro/resize";
+				String prodImgPath = prodItem.getString("image");
+				String prodImgPathMiddlePart = "/16fa6a9aef7ffd6209d5fd9338ffa0b1";
+				String prodImgPathSecondPart = prodImgPath.substring(26);
+				String prodImgPathFirstPart = prodImgPath.replace(prodImgPathSecondPart, "");
+				String prodImg = prodImgBase + prodImgPathFirstPart + prodImgPathMiddlePart + prodImgPathSecondPart;
+				
 				System.out.println("---------------------------------------------------------------------");
 				System.out.println("----- Produs Altex -----");
 				System.out.println("Nume: " + prodName);
 				System.out.println("Pret: " + prodPrice + " lei");
 				System.out.println("Stoc: " + prodStock);
-				
-				// products.add(new ProductDto(prodName, prodPrice, prodStock));
+				System.out.println("Status: " + prodStockStatus);
+				System.out.println("URL: " + prodUrl);
+				System.out.println("Img: " + prodImg);
+
+				products.add(new ProductDto(prodName, prodPrice, prodStockStatus, prodUrl, ProductSource.ALTEX, prodImg));
 			}			
 			
 		} catch (Exception e) {
