@@ -30,17 +30,6 @@ public class ProductDto {
 		System.out.println("Nume: " + this.name);
 		System.out.println("Pret: " + this.price + " lei");
 		System.out.println("Stoc: " + this.stock);
-
-		if(this.stock == 1) {
-			System.out.println("Status: in stoc");
-		}
-		else if(this.stock == 2) {
-			System.out.println("Status: resigilat");
-		}
-		else {
-			System.out.println("Status: stoc epuizat");
-		}
-
 		System.out.println("URL: " + this.url);
 		System.out.println("Img: " + this.img);
 	}

@@ -94,8 +94,10 @@ public class EmagScrapper extends BaseScrapper {
 					String prodUrl = getUrl(prod);
 					String prodImg = getImg(prod);
 
-					ProductDto currentProduct = new ProductDto(prodName, prodPrice, prodStock, prodUrl, ProductSourceType.EMAG, prodImg);
-					products.add(currentProduct);
+					if(prodStock==1) {
+						ProductDto currentProduct = new ProductDto(prodName, prodPrice, prodStock, prodUrl, ProductSourceType.EMAG, prodImg);
+						products.add(currentProduct);
+					}
 
 				} catch (Exception e) {
 					System.out.println("Error Emag : " + e.getMessage());

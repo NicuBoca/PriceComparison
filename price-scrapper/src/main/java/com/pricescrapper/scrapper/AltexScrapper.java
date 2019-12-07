@@ -80,8 +80,10 @@ public class AltexScrapper extends BaseScrapper {
 				String prodUrl = getUrl(prodItem);
 				String prodImg = getImg(prodItem);
 
-				ProductDto currentProduct = new ProductDto(prodName, prodPrice, prodStock, prodUrl, ProductSourceType.ALTEX, prodImg);
-				products.add(currentProduct);
+				if(prodStock==1) {
+					ProductDto currentProduct = new ProductDto(prodName, prodPrice, prodStock, prodUrl, ProductSourceType.ALTEX, prodImg);
+					products.add(currentProduct);
+				}
 			}			
 			
 		} catch (Exception e) {
