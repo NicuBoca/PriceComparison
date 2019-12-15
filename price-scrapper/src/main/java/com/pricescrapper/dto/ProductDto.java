@@ -33,4 +33,5 @@ public class ProductDto {
 		System.out.println("URL: " + this.url);
 		System.out.println("Img: " + this.img);
 	}
+
 }

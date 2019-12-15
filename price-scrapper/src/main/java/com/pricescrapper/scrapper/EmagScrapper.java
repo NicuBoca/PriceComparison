@@ -19,7 +19,7 @@ public class EmagScrapper extends BaseScrapper {
 	}
 
 	private String buildUrl() {
-		String productUrlName = product.replaceAll("\\s+", "%20");
+		String productUrlName = searchProduct.replaceAll("\\s+", "%20");
 		String baseUrl = "https://www.emag.ro/search/";
 		String lastSegment = "?ref=effective_search";
 		String finalUrl = baseUrl + productUrlName + lastSegment;
@@ -74,7 +74,7 @@ public class EmagScrapper extends BaseScrapper {
 	@Override
 	public List<ProductDto> scrap() {
 
-		System.out.println("Emag searcing for product: " + product);
+		System.out.println("Emag searcing for product: " + searchProduct);
 		List<ProductDto> products = new ArrayList<ProductDto>();
 
 		try {

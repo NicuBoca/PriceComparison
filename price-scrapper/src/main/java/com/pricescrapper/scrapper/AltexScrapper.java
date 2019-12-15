@@ -21,7 +21,7 @@ public class AltexScrapper extends BaseScrapper {
 	}
 
 	private String buildUrl() {
-		String productUrlName = product.replaceAll("\\s+","%2520");		
+		String productUrlName = searchProduct.replaceAll("\\s+","%2520");
 		String baseUrl = "https://fenrir.altex.ro/catalog/search/";
 		String finalUrl = baseUrl + productUrlName;
 		System.out.println(finalUrl);
@@ -48,7 +48,7 @@ public class AltexScrapper extends BaseScrapper {
 	@Override
 	public List<ProductDto> scrap() {
 
-		System.out.println("Altex searcing for product: " + product);
+		System.out.println("Altex searcing for product: " + searchProduct);
 		List<ProductDto> products = new ArrayList<ProductDto>();
 
 		try {

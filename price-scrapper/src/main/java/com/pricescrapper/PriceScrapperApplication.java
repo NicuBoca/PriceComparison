@@ -17,10 +17,9 @@ public class PriceScrapperApplication {
 
         Scanner scan = new Scanner(System.in);
         System.out.print("Introduceti produsul: ");
-        String product= scan.nextLine();
+        String product = scan.nextLine();
         CrawlEngine engine = new CrawlEngine();
         engine.crawl(product);
 
     }
-
 }

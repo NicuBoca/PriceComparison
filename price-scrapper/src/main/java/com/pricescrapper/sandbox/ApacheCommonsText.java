@@ -9,11 +9,11 @@ public class ApacheCommonsText {
 
         double c1 = js.apply("catuse", "cartuse");
         double c2 = js.apply("catuse", "uscator");
-        double c3 = js.apply("laptop", "potpal");
+        //double c3 = js.apply("laptop", "potpal");
         double c4 = js.apply("asus zenbook", "Laptop Ultraportabil ASUS ZenBook Edition 30 UX334FL cu procesor Intel® Core™ i7".toLowerCase());
         System.out.println(c1);
         System.out.println(c2);
-        System.out.println(c3);
+        //System.out.println(c3);
         System.out.println(c4);
 
         String str1 = "laptop asus zen";
