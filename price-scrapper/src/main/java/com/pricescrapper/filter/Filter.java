@@ -10,7 +10,7 @@ public class Filter {
     public static List<ProductDto> filter(List<ProductDto> products, String searchProduct) {
         List<ProductDto> filteredProducts = new ArrayList<ProductDto>();
         for (ProductDto product : products) {
-            if (!isSearchNameMatcing(product.getName(), searchProduct)) {
+            if (!isSearchNameMatching(product.getName(), searchProduct)) {
                 continue;
             }
             filteredProducts.add(product);
@@ -18,7 +18,8 @@ public class Filter {
        return filteredProducts;
     }
 
-    public static boolean isSearchNameMatcing(String productName, String searchName) {
+    //test
+    public static boolean isSearchNameMatching(String productName, String searchName) {
         JaccardSimilarity js = new JaccardSimilarity();
         boolean result = true;
 

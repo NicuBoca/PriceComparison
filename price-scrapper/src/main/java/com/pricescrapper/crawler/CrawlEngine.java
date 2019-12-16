@@ -37,7 +37,7 @@ public class CrawlEngine {
 		}
 
 		for(ProductDto currentProduct : products) {
-			currentProduct.display();
+			System.out.println(currentProduct);
 		}
 
 		return products;
