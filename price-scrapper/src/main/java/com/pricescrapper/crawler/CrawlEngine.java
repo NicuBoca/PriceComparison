@@ -1,6 +1,7 @@
 package com.pricescrapper.crawler;
 
 import com.pricescrapper.dto.ProductDto;
+import com.pricescrapper.filter.Filter;
 import com.pricescrapper.scrapper.AltexScrapper;
 import com.pricescrapper.scrapper.BaseScrapper;
 import com.pricescrapper.scrapper.EmagScrapper;
@@ -18,16 +19,16 @@ public class CrawlEngine {
 		this.products.addAll(products); 
 	}
 
-	public List<BaseScrapper> initCrawler(String product) {
+	public List<BaseScrapper> initCrawler(String searchProduct) {
 		List<BaseScrapper> crawlJobs = new ArrayList<BaseScrapper>();
-		crawlJobs.add(new EmagScrapper(product, this));
-		crawlJobs.add(new PcGarageScrapper(product, this));
-		crawlJobs.add(new AltexScrapper(product, this));
+		crawlJobs.add(new EmagScrapper(searchProduct, this));
+		crawlJobs.add(new PcGarageScrapper(searchProduct, this));
+		crawlJobs.add(new AltexScrapper(searchProduct, this));
 		return crawlJobs;
 	}
 
-	public List<ProductDto> crawl(String product) throws Exception {
-		List<BaseScrapper> crawlJobs = initCrawler(product);
+	public List<ProductDto> crawl(String searchProduct) throws Exception {
+		List<BaseScrapper> crawlJobs = initCrawler(searchProduct);
 		ExecutorService executor = Executors.newFixedThreadPool(crawlJobs.size());
 		for (BaseScrapper scrapper : crawlJobs) {
 			executor.execute((Runnable) scrapper);
@@ -36,7 +37,10 @@ public class CrawlEngine {
 		while (!executor.isTerminated()) {
 		}
 
-		for(ProductDto currentProduct : products) {
+		Filter productsFilter = new Filter(products, searchProduct);
+		List<ProductDto> filteredProducts = productsFilter.similarityFilter();
+
+		for(ProductDto currentProduct : filteredProducts) {
 			System.out.println(currentProduct);
 		}
 

@@ -4,51 +4,77 @@ import com.pricescrapper.dto.ProductDto;
 import org.apache.commons.text.similarity.JaccardSimilarity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Filter {
-    public static List<ProductDto> filter(List<ProductDto> products, String searchProduct) {
-        List<ProductDto> filteredProducts = new ArrayList<ProductDto>();
-        for (ProductDto product : products) {
-            if (!isSearchNameMatching(product.getName(), searchProduct)) {
-                continue;
-            }
-            filteredProducts.add(product);
-        }
-       return filteredProducts;
+    private List<ProductDto> products;
+    private String searchProduct;
+
+    public Filter(List<ProductDto> products, String searchProduct) {
+        this.products = products;
+        this.searchProduct = searchProduct.toLowerCase();
     }
 
-    //test
-    public static boolean isSearchNameMatching(String productName, String searchName) {
+    public List<ProductDto> similarityFilter() {
+        List<ProductDto> filteredProducts = new ArrayList<ProductDto>();
+        String[] arrOfSearchName = searchProduct.split(" ");
+        int arrSearchNameLength = arrOfSearchName.length;
+        double similarityRate[] = new double[arrSearchNameLength];
+        String similarString[] = new String[arrSearchNameLength];
+        int prodListLength = products.size();
+        double avgSimilarity[] = new double[prodListLength];
+        String suggestion = "";
+
+        int counter = 0;
+        for (ProductDto product : products) {
+            avgSimilarity[counter] = avgSearchNameMatching(product.getName(), arrOfSearchName, similarityRate, similarString);
+            counter++;
+        }
+
+        double maxAvgSimilarity = Arrays.stream(avgSimilarity).max().getAsDouble();
+        for(int i=0; i<prodListLength; i++) {
+            if(avgSimilarity[i] == maxAvgSimilarity) {
+                filteredProducts.add(products.get(i));
+            }
+        }
+
+        if(maxAvgSimilarity!=1) {
+            for(int i=0; i<arrSearchNameLength; i++) {
+                suggestion = suggestion + " " + similarString[i];
+            }
+            System.out.println("Ati vrut sa scrieti: \"" + suggestion + " \" ?");
+        }
+        return filteredProducts;
+    }
+
+    public double avgSearchNameMatching(String productName, String[] arrOfSearchName, double similarityRate[], String similarString[]) {
         JaccardSimilarity js = new JaccardSimilarity();
-        boolean result = true;
-
         productName = productName.toLowerCase();
-        searchName = searchName.toLowerCase();
-        String[] arrOfStr1 = searchName.split(" ");
-        String[] arrOfStr2 = productName.split(" ");
-        double sim[] = new double[arrOfStr1.length];
-        String simStr[] = new String[arrOfStr1.length];
+        String[] arrOfProductName = productName.split(" ");
+        int arrSearchNameLength = arrOfSearchName.length;
+        int arrProductNameLength = arrOfProductName.length;
+        double currentSimilarityRate[] = new double[arrSearchNameLength];
 
-        for (int i = 0; i < arrOfStr1.length; i++) {
-            for (int j = 0; j < arrOfStr2.length; j++) {
-                double p = js.apply(arrOfStr1[i], arrOfStr2[j]);
-                if (p > sim[i]) {
-                    sim[i] = p;
-                    simStr[i] = arrOfStr2[j];
+        for (int i = 0; i < arrSearchNameLength; i++) {
+            for (int j = 0; j < arrProductNameLength; j++) {
+                double similarity = js.apply(arrOfSearchName[i], arrOfProductName[j]);
+                if (similarity > currentSimilarityRate[i]) {
+                    currentSimilarityRate[i] = similarity;
+                    if (currentSimilarityRate[i] > similarityRate[i]) {
+                        similarityRate[i] = similarity;
+                        similarString[i] = arrOfProductName[j];
+                    }
                 }
             }
         }
 
-        double s=0;
-        for (int k = 0; k < arrOfStr1.length; k++) {
-            s += sim[k];
+        double sum=0;
+        for (int k = 0; k < arrSearchNameLength; k++) {
+            sum += currentSimilarityRate[k];
         }
-        double medie = s/arrOfStr1.length;
-        if(medie < 0.7) {
-            result = false;
-        }
-
-        return result;
+        double avgSimilarity = sum/arrSearchNameLength;
+        return avgSimilarity;
     }
 }
