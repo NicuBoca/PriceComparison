@@ -2,10 +2,7 @@ package com.pricescrapper.crawler;
 
 import com.pricescrapper.dto.ProductDto;
 import com.pricescrapper.filter.Filter;
-import com.pricescrapper.scrapper.AltexScrapper;
-import com.pricescrapper.scrapper.BaseScrapper;
-import com.pricescrapper.scrapper.EmagScrapper;
-import com.pricescrapper.scrapper.PcGarageScrapper;
+import com.pricescrapper.scrapper.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +21,7 @@ public class CrawlEngine {
 		crawlJobs.add(new EmagScrapper(searchProduct, this));
 		crawlJobs.add(new PcGarageScrapper(searchProduct, this));
 		crawlJobs.add(new AltexScrapper(searchProduct, this));
+		crawlJobs.add(new MediaGalaxyScrapper(searchProduct, this));
 		return crawlJobs;
 	}
 
@@ -44,6 +42,6 @@ public class CrawlEngine {
 			System.out.println(currentProduct);
 		}
 
-		return products;
+		return filteredProducts;
 	}
 }
