@@ -10,6 +10,7 @@ import java.util.List;
 import com.pricescrapper.crawler.CrawlEngine;
 import com.pricescrapper.dto.ProductDto;
 
+import com.pricescrapper.filter.Filter;
 import com.pricescrapper.types.ProductSourceType;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -49,6 +50,7 @@ public class MediaGalaxyScrapper extends BaseScrapper {
     public List<ProductDto> scrap() {
 
         System.out.println("MediaGalaxy searcing for product: " + searchProduct);
+        double similarityRate;
         List<ProductDto> products = new ArrayList<ProductDto>();
 
         try {
@@ -82,6 +84,7 @@ public class MediaGalaxyScrapper extends BaseScrapper {
 
                 if(prodStock==1) {
                     ProductDto currentProduct = new ProductDto(prodName, prodPrice, prodStock, prodUrl, ProductSourceType.MEDIAGALAXY, prodImg);
+                    similarityRate = Filter.getSimilarityRate(searchProduct, currentProduct.getName());
                     products.add(currentProduct);
                 }
             }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.pricescrapper.crawler.CrawlEngine;
 import com.pricescrapper.dto.ProductDto;
+import com.pricescrapper.filter.Filter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -67,6 +68,7 @@ public class PcGarageScrapper extends BaseScrapper {
 	public List<ProductDto> scrap() {
 
 		System.out.println("PcGarage searcing for product: " + searchProduct);
+		double similarityRate;
 		List<ProductDto> products = new ArrayList<ProductDto>();
 
 		try {
@@ -88,6 +90,7 @@ public class PcGarageScrapper extends BaseScrapper {
 
 					if(prodStock==1) {
 						ProductDto currentProduct = new ProductDto(prodName, prodPrice, prodStock, prodUrl, ProductSourceType.PCGARAGE, prodImg);
+						similarityRate = Filter.getSimilarityRate(searchProduct, currentProduct.getName());
 						products.add(currentProduct);
 					}
 

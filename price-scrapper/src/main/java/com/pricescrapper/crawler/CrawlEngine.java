@@ -35,13 +35,15 @@ public class CrawlEngine {
 		while (!executor.isTerminated()) {
 		}
 
-		Filter productsFilter = new Filter(products, searchProduct);
-		List<ProductDto> filteredProducts = productsFilter.similarityFilter();
+//		Filter productsFilter = new Filter(products, searchProduct);
+//		List<ProductDto> filteredProducts = productsFilter.similarityFilter();
+//
+//		for(ProductDto currentProduct : filteredProducts) {
+//			System.out.println(currentProduct);
+//		}
+//
+//		return filteredProducts;
 
-		for(ProductDto currentProduct : filteredProducts) {
-			System.out.println(currentProduct);
-		}
-
-		return filteredProducts;
+		return products;
 	}
 }
