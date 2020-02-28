@@ -1,7 +1,7 @@
 package com.pricescrapper.scrapper;
 
 import com.pricescrapper.crawler.CrawlEngine;
-import com.pricescrapper.dto.ProductDto;
+import com.pricescrapper.dto.ProductDTO;
 
 import java.util.List;
 
@@ -14,10 +14,10 @@ public abstract class BaseScrapper implements Runnable {
 		this.engine = engine;
 	}
 
-	public abstract List<ProductDto> scrap();
+	public abstract List<ProductDTO> scrap();
 	
 	public void run() {
-		List<ProductDto> products = scrap();
+		List<ProductDTO> products = scrap();
 		engine.addProducts(products);
 	}
 	

@@ -1,19 +1,18 @@
 package com.pricescrapper.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import com.pricescrapper.types.ProductSourceType;
-import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter
 @ToString
+
 @Document(collection = "product")
-public class ProductDto {
+public class ProductDTO {
 	@Id
 	private String id;
 	private String name;
@@ -22,4 +21,5 @@ public class ProductDto {
 	private String url;
 	private ProductSourceType source;
 	private String img;
+	private double similarity;
 }

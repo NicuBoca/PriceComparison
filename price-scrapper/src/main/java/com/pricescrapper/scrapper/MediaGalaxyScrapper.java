@@ -8,14 +8,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.pricescrapper.crawler.CrawlEngine;
-import com.pricescrapper.dto.ProductDto;
+import com.pricescrapper.dao.ProductDAO;
+import com.pricescrapper.dto.ProductDTO;
 
 import com.pricescrapper.filter.Filter;
 import com.pricescrapper.types.ProductSourceType;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class MediaGalaxyScrapper extends BaseScrapper {
+
+    @Autowired
+    private ProductDAO productDAO;
 
     public MediaGalaxyScrapper(String product, CrawlEngine engine) {
         super(product, engine);
@@ -47,11 +52,10 @@ public class MediaGalaxyScrapper extends BaseScrapper {
     }
 
     @Override
-    public List<ProductDto> scrap() {
+    public List<ProductDTO> scrap() {
 
         System.out.println("MediaGalaxy searcing for product: " + searchProduct);
-        double similarityRate;
-        List<ProductDto> products = new ArrayList<ProductDto>();
+        List<ProductDTO> products = new ArrayList<ProductDTO>();
 
         try {
             String searchUrl = buildUrl();
@@ -83,8 +87,19 @@ public class MediaGalaxyScrapper extends BaseScrapper {
                 String prodImg = getImg(prodItem);
 
                 if(prodStock==1) {
-                    ProductDto currentProduct = new ProductDto(prodName, prodPrice, prodStock, prodUrl, ProductSourceType.MEDIAGALAXY, prodImg);
-                    similarityRate = Filter.getSimilarityRate(searchProduct, currentProduct.getName());
+                    double similarityCoefficient = Filter.getSimilarityCoefficient(searchProduct, prodName);
+
+                    ProductDTO currentProduct = ProductDTO.builder()
+                            .name(prodName)
+                            .price(prodPrice)
+                            .stock(prodStock)
+                            .url(prodUrl)
+                            .source(ProductSourceType.MEDIAGALAXY)
+                            .img(prodImg)
+                            .similarity(similarityCoefficient)
+                            .build();
+
+                    productDAO.insertProduct(currentProduct);
                     products.add(currentProduct);
                 }
             }

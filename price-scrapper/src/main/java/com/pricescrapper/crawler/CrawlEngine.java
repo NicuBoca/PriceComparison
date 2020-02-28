@@ -1,7 +1,6 @@
 package com.pricescrapper.crawler;
 
-import com.pricescrapper.dto.ProductDto;
-import com.pricescrapper.filter.Filter;
+import com.pricescrapper.dto.ProductDTO;
 import com.pricescrapper.scrapper.*;
 
 import java.util.ArrayList;
@@ -10,9 +9,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class CrawlEngine {
-	List<ProductDto> products = new ArrayList<ProductDto>();
+	List<ProductDTO> products = new ArrayList<ProductDTO>();
 	
-	public synchronized void addProducts(List<ProductDto> products) {
+	public synchronized void addProducts(List<ProductDTO> products) {
 		this.products.addAll(products); 
 	}
 
@@ -25,7 +24,7 @@ public class CrawlEngine {
 		return crawlJobs;
 	}
 
-	public List<ProductDto> crawl(String searchProduct) throws Exception {
+	public List<ProductDTO> crawl(String searchProduct) throws Exception {
 		List<BaseScrapper> crawlJobs = initCrawler(searchProduct);
 		ExecutorService executor = Executors.newFixedThreadPool(crawlJobs.size());
 		for (BaseScrapper scrapper : crawlJobs) {

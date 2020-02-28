@@ -1,7 +1,7 @@
 package com.pricescrapper;
 
 import com.pricescrapper.crawler.CrawlEngine;
-import com.pricescrapper.sandbox.ApacheCommonsText;
+import com.pricescrapper.dto.ProductDTO;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -9,6 +9,9 @@ import java.util.Scanner;
 
 @SpringBootApplication
 public class PriceScrapperApplication {
+
+//    @Autowired
+//    static ProductRepository productRepository;
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(PriceScrapperApplication.class, args);

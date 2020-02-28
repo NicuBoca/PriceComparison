@@ -1,12 +1,6 @@
 package com.pricescrapper.filter;
 
-import com.pricescrapper.dto.ProductDto;
 import org.apache.commons.text.similarity.JaccardSimilarity;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public class Filter {
 
@@ -79,7 +73,7 @@ public class Filter {
 //        return avgSimilarity;
 //    }
 
-    public static double getSimilarityRate(String productSearchName, String productFoundName) {
+    public static double getSimilarityCoefficient(String productSearchName, String productFoundName) {
         JaccardSimilarity js = new JaccardSimilarity();
 
         productSearchName = productSearchName.toLowerCase();
@@ -90,22 +84,22 @@ public class Filter {
         String[] productFoundWords = productFoundName.split(" ");
         int noProductFoundWords =  productFoundWords.length;
 
-        double currentSimilarityRate[] = new double[noProductSearchWords];
+        double productSearchWordsSimilarity[] = new double[noProductSearchWords];
 
         for (int i = 0; i < noProductSearchWords; i++) {
             for (int j = 0; j < noProductFoundWords; j++) {
-                double similarity = js.apply(productSearchWords[i], productFoundWords[j]);
-                if (similarity > currentSimilarityRate[i]) {
-                    currentSimilarityRate[i] = similarity;
+                double currentSimilarity = js.apply(productSearchWords[i], productFoundWords[j]);
+                if (currentSimilarity > productSearchWordsSimilarity[i]) {
+                    productSearchWordsSimilarity[i] = currentSimilarity;
                 }
             }
         }
 
         double sum=0;
         for (int k = 0; k < noProductSearchWords; k++) {
-            sum += currentSimilarityRate[k];
+            sum += productSearchWordsSimilarity[k];
         }
-        double similarityRate = sum/noProductSearchWords;
-        return similarityRate;
+        double similarityCoefficient = sum/noProductSearchWords;
+        return similarityCoefficient;
     }
 }
