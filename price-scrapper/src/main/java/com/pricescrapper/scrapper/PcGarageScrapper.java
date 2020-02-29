@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.pricescrapper.crawler.CrawlEngine;
-import com.pricescrapper.dao.ProductDAO;
 import com.pricescrapper.dto.ProductDTO;
 import com.pricescrapper.filter.Filter;
 import org.jsoup.Jsoup;
@@ -17,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class PcGarageScrapper extends BaseScrapper {
 
-	@Autowired
-	private ProductDAO productDAO;
 	public PcGarageScrapper(String product, CrawlEngine engine) {
 		super(product, engine);
 	}
@@ -50,8 +47,7 @@ public class PcGarageScrapper extends BaseScrapper {
 		int prodStock;
 		if (prodStockText.equals("Nu este in stoc")) {
 			prodStock = 0;
-		}
-		else {
+		} else {
 			prodStock = 1;
 		}
 		return prodStock;
@@ -104,7 +100,7 @@ public class PcGarageScrapper extends BaseScrapper {
 								.similarity(similarityCoefficient)
 								.build();
 
-						productDAO.insertProduct(currentProduct);
+						//productDAO.insertProduct(currentProduct);
 						products.add(currentProduct);
 					}
 

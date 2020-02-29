@@ -9,8 +9,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class CrawlEngine {
+
 	List<ProductDTO> products = new ArrayList<ProductDTO>();
-	
+
 	public synchronized void addProducts(List<ProductDTO> products) {
 		this.products.addAll(products); 
 	}
@@ -18,9 +19,9 @@ public class CrawlEngine {
 	public List<BaseScrapper> initCrawler(String searchProduct) {
 		List<BaseScrapper> crawlJobs = new ArrayList<BaseScrapper>();
 		crawlJobs.add(new EmagScrapper(searchProduct, this));
-		crawlJobs.add(new PcGarageScrapper(searchProduct, this));
-		crawlJobs.add(new AltexScrapper(searchProduct, this));
-		crawlJobs.add(new MediaGalaxyScrapper(searchProduct, this));
+//		crawlJobs.add(new PcGarageScrapper(searchProduct, this));
+//		crawlJobs.add(new AltexScrapper(searchProduct, this));
+//		crawlJobs.add(new MediaGalaxyScrapper(searchProduct, this));
 		return crawlJobs;
 	}
 

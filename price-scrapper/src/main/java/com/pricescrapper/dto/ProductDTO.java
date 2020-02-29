@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Builder
 @Getter
 @ToString
-
 @Document(collection = "product")
 public class ProductDTO {
 	@Id

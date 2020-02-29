@@ -4,21 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.pricescrapper.crawler.CrawlEngine;
-import com.pricescrapper.dao.ProductDAO;
 import com.pricescrapper.dto.ProductDTO;
 import com.pricescrapper.filter.Filter;
+import com.pricescrapper.repository.ProductRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import com.pricescrapper.types.ProductSourceType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-
+//@Component
 public class EmagScrapper extends BaseScrapper {
 
-	@Autowired
-	private ProductDAO productDAO;
+//	@Autowired
+//	ProductRepository repository;
 
 	public EmagScrapper(String product, CrawlEngine engine) {
 		super(product, engine);
@@ -34,8 +35,7 @@ public class EmagScrapper extends BaseScrapper {
 	}
 
 	private String getName(Element prod) {
-		String prodName = prod.select("div.card-section-mid h2.card-body a.product-title").text();
-		return prodName;
+		return prod.select("div.card-section-mid h2.card-body a.product-title").text();
 	}
 
 	private float getPrice(Element prod) {
@@ -47,8 +47,7 @@ public class EmagScrapper extends BaseScrapper {
 		prodPriceString = prodPriceString.replace("de la ", "");
 		prodPriceString = prodPriceString.replace(".", "");
 		prodPriceString = prodPriceString.replace(",", ".");
-		float prodPrice = Float.parseFloat(prodPriceString);
-		return prodPrice;
+		return Float.parseFloat(prodPriceString);
 	}
 
 	private int getStock(Element prod) {
@@ -56,12 +55,10 @@ public class EmagScrapper extends BaseScrapper {
 		int prodStock;
 		if (prodStockText.equals("stoc epuizat")) {
 			prodStock = 0;
-		}
-		else if (prodStockText.isEmpty()) {
+		} else if (prodStockText.isEmpty()) {
 			prodStockText = "resigilat";
 			prodStock = 2;
-		}
-		else {
+		} else {
 			prodStock = 1;
 		}
 		return prodStock;
@@ -113,8 +110,9 @@ public class EmagScrapper extends BaseScrapper {
 								.similarity(similarityCoefficient)
 								.build();
 
-						productDAO.insertProduct(currentProduct);
+//						repository.insert(currentProduct);
 						products.add(currentProduct);
+
 					}
 
 				} catch (Exception e) {
