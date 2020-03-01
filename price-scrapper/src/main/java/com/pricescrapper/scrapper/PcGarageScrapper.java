@@ -3,7 +3,6 @@ package com.pricescrapper.scrapper;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pricescrapper.crawler.CrawlEngine;
 import com.pricescrapper.dto.ProductDTO;
 import com.pricescrapper.filter.Filter;
 import org.jsoup.Jsoup;
@@ -11,16 +10,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import com.pricescrapper.types.ProductSourceType;
-import org.springframework.beans.factory.annotation.Autowired;
-
 
 public class PcGarageScrapper extends BaseScrapper {
 
-	public PcGarageScrapper(String product, CrawlEngine engine) {
-		super(product, engine);
-	}
-
-	private String buildUrl() {
+	private String buildUrl(String searchProduct) {
 		String productUrlName = searchProduct.replaceAll("\\s+","+");
 		String baseUrl = "https://www.pcgarage.ro/cauta/";
 		String finalUrl = baseUrl + productUrlName;
@@ -65,13 +58,13 @@ public class PcGarageScrapper extends BaseScrapper {
 	}
 
 	@Override
-	public List<ProductDTO> scrap() {
+	public List<ProductDTO> scrap(String searchProduct) {
 
 		System.out.println("PcGarage searcing for product: " + searchProduct);
 		List<ProductDTO> products = new ArrayList<ProductDTO>();
 
 		try {
-			String searchUrl = buildUrl();
+			String searchUrl = buildUrl(searchProduct);
 			System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
 			Document doc = Jsoup.connect(searchUrl)
 					.timeout(30 * 1000)

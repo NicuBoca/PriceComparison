@@ -7,22 +7,16 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pricescrapper.crawler.CrawlEngine;
 import com.pricescrapper.dto.ProductDTO;
 
 import com.pricescrapper.filter.Filter;
 import com.pricescrapper.types.ProductSourceType;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class AltexScrapper extends BaseScrapper {
 
-	public AltexScrapper(String product, CrawlEngine engine) {
-		super(product, engine);
-	}
-
-	private String buildUrl() {
+	private String buildUrl(String searchProduct) {
 		String productUrlName = searchProduct.replaceAll("\\s+","%2520");
 		String baseUrl = "https://fenrir.altex.ro/catalog/search/";
 		String finalUrl = baseUrl + productUrlName;
@@ -48,13 +42,13 @@ public class AltexScrapper extends BaseScrapper {
 	}
 
 	@Override
-	public List<ProductDTO> scrap() {
+	public List<ProductDTO> scrap(String searchProduct) {
 
 		System.out.println("Altex searcing for product: " + searchProduct);
 		List<ProductDTO> products = new ArrayList<ProductDTO>();
 
 		try {
-			String searchUrl = buildUrl();
+			String searchUrl = buildUrl(searchProduct);
 			URL obj = new URL(searchUrl);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			con.setRequestMethod("GET");
@@ -95,7 +89,6 @@ public class AltexScrapper extends BaseScrapper {
 							.similarity(similarityCoefficient)
 							.build();
 
-					//productDAO.insertProduct(currentProduct);
 					products.add(currentProduct);
 				}
 			}			
