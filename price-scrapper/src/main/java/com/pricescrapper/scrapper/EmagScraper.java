@@ -41,6 +41,9 @@ public class EmagScraper extends BaseScraper {
                             .get();
 
                     List<ProductDTO> productsCurrentPage = extractData(doc, searchProduct);
+                    if(productsCurrentPage.isEmpty()) {
+                        break;
+                    }
                     productsList.addAll(productsCurrentPage);
                 }
             }
@@ -78,8 +81,6 @@ public class EmagScraper extends BaseScraper {
                             .build();
 
                     products.add(currentProduct);
-                } else if(prodStock == 0){
-                    break;
                 }
             } catch (Exception e) {
                 System.out.println("Error Emag : " + e.getMessage());
