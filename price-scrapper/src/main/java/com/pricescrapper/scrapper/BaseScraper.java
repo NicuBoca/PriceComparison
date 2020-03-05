@@ -3,7 +3,7 @@ import com.pricescrapper.dto.ProductDTO;
 
 import java.util.List;
 
-public abstract class BaseScrapper {
+public abstract class BaseScraper {
 
 	public abstract List<ProductDTO> scrap(String seachProduct);
 

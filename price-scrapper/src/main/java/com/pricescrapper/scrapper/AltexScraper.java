@@ -14,11 +14,12 @@ import com.pricescrapper.types.ProductSourceType;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class AltexScrapper extends BaseScrapper {
+public class AltexScraper extends BaseScraper {
 
 	private String buildUrl(String searchProduct) {
 		String productUrlName = searchProduct.replaceAll("\\s+","%2520");
 		String baseUrl = "https://fenrir.altex.ro/catalog/search/";
+		// https://fenrir.altex.ro/catalog/search/asus?page=2
 		String finalUrl = baseUrl + productUrlName;
 		System.out.println(finalUrl);
 		return finalUrl;

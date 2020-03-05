@@ -11,7 +11,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import com.pricescrapper.types.ProductSourceType;
 
-public class PcGarageScrapper extends BaseScrapper {
+public class PcGarageScraper extends BaseScraper {
 
 	private String buildUrl(String searchProduct) {
 		String productUrlName = searchProduct.replaceAll("\\s+","+");

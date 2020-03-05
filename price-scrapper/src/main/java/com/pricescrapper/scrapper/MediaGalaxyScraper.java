@@ -14,7 +14,7 @@ import com.pricescrapper.types.ProductSourceType;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class MediaGalaxyScrapper extends BaseScrapper {
+public class MediaGalaxyScraper extends BaseScraper {
 
     private String buildUrl(String searchProduct) {
         String productUrlName = searchProduct.replaceAll("\\s+","%2520");

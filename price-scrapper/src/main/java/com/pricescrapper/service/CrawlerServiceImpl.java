@@ -16,22 +16,23 @@ public class CrawlerServiceImpl implements CrawlerService {
     @Autowired
     private ProductRepository productRepository;
 
-    private List<BaseScrapper> initCrawler() {
-        List<BaseScrapper> crawlJobs = new ArrayList<BaseScrapper>();
-        crawlJobs.add(new EmagScrapper());
-    	crawlJobs.add(new PcGarageScrapper());
-        crawlJobs.add(new AltexScrapper());
-		crawlJobs.add(new MediaGalaxyScrapper());
+    private List<BaseScraper> initCrawler() {
+        List<BaseScraper> crawlJobs = new ArrayList<BaseScraper>();
+        crawlJobs.add(new EmagScraper());
+//    	crawlJobs.add(new PcGarageScrapper());
+//      crawlJobs.add(new AltexScrapper());
+//		crawlJobs.add(new MediaGalaxyScrapper());
         return crawlJobs;
     }
 
     @Override
     public void crawl(String searchProduct) {
         productRepository.deleteAll();
-        List<BaseScrapper> crawlJobs = initCrawler();
-        for (BaseScrapper scrapper : crawlJobs) {
+        List<BaseScraper> crawlJobs = initCrawler();
+        for (BaseScraper scrapper : crawlJobs) {
             List<ProductDTO> productList = scrapper.getProducts(searchProduct);
             productRepository.saveAll(productList);
         }
+        System.out.println("Finish!");
     }
 }

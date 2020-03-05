@@ -20,8 +20,8 @@ public class ProductRestController {
 
     @CrossOrigin(origins = "http://localhost:4200")
     @RequestMapping(method = RequestMethod.GET, value = "/api/product/{product}")
-    public ResponseEntity<List<ProductDTO>> getProducts(@PathVariable String product) {
+    public ResponseEntity<List<ProductDTO>> getAllProducts(@PathVariable String product) {
         crawlerService.crawl(product);
-        return new ResponseEntity<>((List<ProductDTO>) productRepository.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(productRepository.findAllByOrderBySimilarityDesc(), HttpStatus.OK);
     }
 }
