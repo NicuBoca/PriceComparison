@@ -1,6 +1,7 @@
 package com.pricescrapper.scrapper;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -20,65 +21,87 @@ public class MediaGalaxyScraper extends BaseScraper {
     public List<ProductDTO> scrap(String searchProduct) {
 
         System.out.println("MediaGalaxy searcing for product: " + searchProduct);
-        List<ProductDTO> products = new ArrayList<ProductDTO>();
+        List<ProductDTO> productsList = new ArrayList<ProductDTO>();
+        boolean prodExists = true;
+        int pageCounter = 1;
 
         try {
-            String searchUrl = buildUrl(searchProduct);
-            URL obj = new URL(searchUrl);
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-            con.setRequestMethod("GET");
-            con.setRequestProperty("User-Agent", "Mozilla/5.0");
-            //int responseCode = con.getResponseCode();
-            //System.out.println("response code: " + responseCode);
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-            while((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-            in.close();
-            //System.out.println(response.toString());
+            while(prodExists) {
+                String searchUrl = buildUrl(searchProduct, pageCounter);
+                URL obj = new URL(searchUrl);
+                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+                con.setRequestMethod("GET");
+                con.setRequestProperty("User-Agent", "Mozilla/5.0");
+                int responseCode = con.getResponseCode();
+                //System.out.println("response code: " + responseCode);
 
-            JSONObject resObject = new JSONObject(response.toString());
-            JSONArray productsArray = (JSONArray) resObject.get("products");
+                if(responseCode == 200) {
+                    List<ProductDTO> productsCurrentPage = extractData(con, searchProduct);
+                    if(productsCurrentPage.isEmpty()) {
+                        prodExists = false;
+                    }
+                    productsList.addAll(productsCurrentPage);
 
-            for(int i=0; i<productsArray.length(); i++) {
-                JSONObject prodItem = (JSONObject) productsArray.get(i);
-                String prodName = prodItem.getString("name");
-                float prodPrice = prodItem.getFloat("price");
-                int prodStock = prodItem.getInt("stock_status");
-                String prodUrl = getProductUrl(prodItem);
-                String prodImg = getProductImg(prodItem);
-
-                if(prodStock==1) {
-                    double similarityCoefficient = Filter.getSimilarityCoefficient(searchProduct, prodName);
-
-                    ProductDTO currentProduct = ProductDTO.builder()
-                            .name(prodName)
-                            .price(prodPrice)
-                            .stock(prodStock)
-                            .url(prodUrl)
-                            .source(ProductSourceType.MEDIAGALAXY)
-                            .img(prodImg)
-                            .similarity(similarityCoefficient)
-                            .build();
-
-                    products.add(currentProduct);
+                } else {
+                    System.out.println("MediaGalaxy response code: " + responseCode);
                 }
+                pageCounter++;
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        System.out.println("[MEDIAGALAXY] Numarul de pagini (parcurse): " + (pageCounter-1));
+        System.out.println("[MEDIAGALAXY] Numarul de produse (in stoc): " + productsList.size());
+        return productsList;
+    }
+    private List<ProductDTO> extractData(HttpURLConnection con, String searchProduct) throws IOException {
+        List<ProductDTO> products = new ArrayList<ProductDTO>();
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+        JSONObject resObject = new JSONObject(response.toString());
+        JSONArray productsArray = (JSONArray) resObject.get("products");
+
+        for(int i=0; i<productsArray.length(); i++) {
+            JSONObject prodItem = (JSONObject) productsArray.get(i);
+            String prodName = prodItem.getString("name");
+            float prodPrice = prodItem.getFloat("price");
+            int prodStock = prodItem.getInt("stock_status");
+            String prodUrl = getProductUrl(prodItem);
+            String prodImg = getProductImg(prodItem);
+
+            if (prodStock == 1) {
+                double similarityCoefficient = Filter.getSimilarityCoefficient(searchProduct, prodName);
+
+                ProductDTO currentProduct = ProductDTO.builder()
+                        .name(prodName)
+                        .price(prodPrice)
+                        .stock(prodStock)
+                        .url(prodUrl)
+                        .source(ProductSourceType.MEDIAGALAXY)
+                        .img(prodImg)
+                        .similarity(similarityCoefficient)
+                        .build();
+
+                products.add(currentProduct);
+            }
+        }
         return products;
     }
 
-    private String buildUrl(String searchProduct) {
+    private String buildUrl(String searchProduct, int pageNumber) {
         String productUrlName = searchProduct.replaceAll("\\s+","%2520");
         String baseUrl = "https://cerberus.mediagalaxy.ro/catalog/search/";
-        String finalUrl = baseUrl + productUrlName;
+        String finalUrl = baseUrl + productUrlName + "?page=" + pageNumber;
         System.out.println(finalUrl);
         return finalUrl;
     }

@@ -30,7 +30,7 @@ public class EmagScraper extends BaseScraper {
             productsList.addAll(productsCurrentPage1);
 
             int nrOfPages = getNumberOfPages(docTest);
-            System.out.println("[EMAG] Numarul de pagini: " + nrOfPages);
+            System.out.println("[EMAG] Numarul de pagini (total): " + nrOfPages);
 
             if(nrOfPages > 1) {
                 for(int i=2; i<=nrOfPages; i++) {
