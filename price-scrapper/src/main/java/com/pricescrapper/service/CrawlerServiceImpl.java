@@ -19,9 +19,9 @@ public class CrawlerServiceImpl implements CrawlerService {
     private List<BaseScraper> initCrawler() {
         List<BaseScraper> crawlJobs = new ArrayList<BaseScraper>();
         crawlJobs.add(new EmagScraper());
-//    	crawlJobs.add(new PcGarageScrapper());
-//      crawlJobs.add(new AltexScrapper());
-//		crawlJobs.add(new MediaGalaxyScrapper());
+    	crawlJobs.add(new PcGarageScraper());
+        crawlJobs.add(new AltexScraper());
+		crawlJobs.add(new MediaGalaxyScraper());
         return crawlJobs;
     }
 

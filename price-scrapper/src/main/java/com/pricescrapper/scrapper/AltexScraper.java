@@ -16,32 +16,6 @@ import org.json.JSONObject;
 
 public class AltexScraper extends BaseScraper {
 
-	private String buildUrl(String searchProduct) {
-		String productUrlName = searchProduct.replaceAll("\\s+","%2520");
-		String baseUrl = "https://fenrir.altex.ro/catalog/search/";
-		// https://fenrir.altex.ro/catalog/search/asus?page=2
-		String finalUrl = baseUrl + productUrlName;
-		System.out.println(finalUrl);
-		return finalUrl;
-	}
-
-	private String getUrl(JSONObject prodItem) {
-		String prodUrlBase = "https://altex.ro/";
-		String prodUrlPath = prodItem.getString("url_key");
-		String prodUrl = prodUrlBase + prodUrlPath;
-		return prodUrl;
-	}
-
-	private String getImg(JSONObject prodItem) {
-		String prodImgBase = "https://cdna.altex.ro/resize";
-		String prodImgPath = prodItem.getString("image");
-		String prodImgPathMiddlePart = "/16fa6a9aef7ffd6209d5fd9338ffa0b1";
-		String prodImgPathSecondPart = prodImgPath.substring(26);
-		String prodImgPathFirstPart = prodImgPath.replace(prodImgPathSecondPart, "");
-		String prodImg = prodImgBase + prodImgPathFirstPart + prodImgPathMiddlePart + prodImgPathSecondPart;
-		return prodImg;
-	}
-
 	@Override
 	public List<ProductDTO> scrap(String searchProduct) {
 
@@ -56,7 +30,7 @@ public class AltexScraper extends BaseScraper {
 			con.setRequestProperty("User-Agent", "Mozilla/5.0");
 			//int responseCode = con.getResponseCode();
 			//System.out.println("response code: " + responseCode);
-			
+
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String inputLine;
 			StringBuffer response = new StringBuffer();
@@ -65,17 +39,17 @@ public class AltexScraper extends BaseScraper {
 			}
 			in.close();
 			//System.out.println(response.toString());
-			
+
 			JSONObject resObject = new JSONObject(response.toString());
 			JSONArray productsArray = (JSONArray) resObject.get("products");
-			
+
 			for(int i=0; i<productsArray.length(); i++) {
 				JSONObject prodItem = (JSONObject) productsArray.get(i);
 				String prodName = prodItem.getString("name");
 				float prodPrice = prodItem.getFloat("price");
 				int prodStock = prodItem.getInt("stock_status");
-				String prodUrl = getUrl(prodItem);
-				String prodImg = getImg(prodItem);
+				String prodUrl = getProductUrl(prodItem);
+				String prodImg = getProductImg(prodItem);
 
 				if(prodStock==1) {
 					double similarityCoefficient = Filter.getSimilarityCoefficient(searchProduct, prodName);
@@ -92,13 +66,39 @@ public class AltexScraper extends BaseScraper {
 
 					products.add(currentProduct);
 				}
-			}			
-			
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return products;
+	}
+
+	private String buildUrl(String searchProduct) {
+		String productUrlName = searchProduct.replaceAll("\\s+","%2520");
+		String baseUrl = "https://fenrir.altex.ro/catalog/search/";
+		// https://fenrir.altex.ro/catalog/search/asus?page=2
+		String finalUrl = baseUrl + productUrlName;
+		System.out.println(finalUrl);
+		return finalUrl;
+	}
+
+	private String getProductUrl(JSONObject prodItem) {
+		String prodUrlBase = "https://altex.ro/";
+		String prodUrlPath = prodItem.getString("url_key");
+		String prodUrl = prodUrlBase + prodUrlPath;
+		return prodUrl;
+	}
+
+	private String getProductImg(JSONObject prodItem) {
+		String prodImgBase = "https://cdna.altex.ro/resize";
+		String prodImgPath = prodItem.getString("image");
+		String prodImgPathMiddlePart = "/16fa6a9aef7ffd6209d5fd9338ffa0b1";
+		String prodImgPathSecondPart = prodImgPath.substring(26);
+		String prodImgPathFirstPart = prodImgPath.replace(prodImgPathSecondPart, "");
+		String prodImg = prodImgBase + prodImgPathFirstPart + prodImgPathMiddlePart + prodImgPathSecondPart;
+		return prodImg;
 	}
 
 }

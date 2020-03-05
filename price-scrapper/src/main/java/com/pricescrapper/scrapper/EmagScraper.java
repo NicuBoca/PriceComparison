@@ -58,11 +58,11 @@ public class EmagScraper extends BaseScraper {
 
         for (Element prod : list) {
             try {
-                String prodName = getName(prod);
-                float prodPrice = getPrice(prod);
-                int prodStock = getStock(prod);
-                String prodUrl = getUrl(prod);
-                String prodImg = getImg(prod);
+                String prodName = getProductName(prod);
+                float prodPrice = getProductPrice(prod);
+                int prodStock = getProductStock(prod);
+                String prodUrl = getProductUrl(prod);
+                String prodImg = getProductImg(prod);
 
                 if (prodStock == 1) {
                     double similarityCoefficient = Filter.getSimilarityCoefficient(searchProduct, prodName);
@@ -111,11 +111,11 @@ public class EmagScraper extends BaseScraper {
         return nrOfPages;
     }
 
-    private String getName(Element prod) {
+    private String getProductName(Element prod) {
         return prod.select("div.card-section-mid h2.card-body a.product-title").text();
     }
 
-    private float getPrice(Element prod) {
+    private float getProductPrice(Element prod) {
         String prodPriceString = prod.select("div.card-section-btm div.card-body p.product-new-price").text();
         String prodPriceSupString = prod.select("div.card-section-btm div.card-body p.product-new-price sup").text();
         prodPriceString = prodPriceString.replace(prodPriceString.substring(prodPriceString.length() - 6),
@@ -127,7 +127,7 @@ public class EmagScraper extends BaseScraper {
         return Float.parseFloat(prodPriceString);
     }
 
-    private int getStock(Element prod) {
+    private int getProductStock(Element prod) {
         String prodStockText = prod.select("div.card-section-btm div.card-body p.product-stock-status").text();
         int prodStock;
         if (prodStockText.equals("stoc epuizat") || prodStockText.equals("indisponibil")) {
@@ -140,12 +140,12 @@ public class EmagScraper extends BaseScraper {
         return prodStock;
     }
 
-    private String getUrl(Element prod) {
+    private String getProductUrl(Element prod) {
         String prodUrl = prod.select("div.card-section-mid h2.card-body a.product-title").attr("href");
         return prodUrl;
     }
 
-    private String getImg(Element prod) {
+    private String getProductImg(Element prod) {
         String prodImg = prod.select("div.card-section-top div.card-heading a.thumbnail-wrapper div.thumbnail img.lozad").attr("data-src");
         return prodImg;
     }

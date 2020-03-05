@@ -16,31 +16,6 @@ import org.json.JSONObject;
 
 public class MediaGalaxyScraper extends BaseScraper {
 
-    private String buildUrl(String searchProduct) {
-        String productUrlName = searchProduct.replaceAll("\\s+","%2520");
-        String baseUrl = "https://cerberus.mediagalaxy.ro/catalog/search/";
-        String finalUrl = baseUrl + productUrlName;
-        System.out.println(finalUrl);
-        return finalUrl;
-    }
-
-    private String getUrl(JSONObject prodItem) {
-        String prodUrlBase = "https://mediagalaxy.ro/";
-        String prodUrlPath = prodItem.getString("url_key");
-        String prodUrl = prodUrlBase + prodUrlPath;
-        return prodUrl;
-    }
-
-    private String getImg(JSONObject prodItem) {
-        String prodImgBase = "https://lcdn.altex.ro/resize";
-        String prodImgPath = prodItem.getString("image");
-        String prodImgPathMiddlePart = "/16fa6a9aef7ffd6209d5fd9338ffa0b1";
-        String prodImgPathSecondPart = prodImgPath.substring(26);
-        String prodImgPathFirstPart = prodImgPath.replace(prodImgPathSecondPart, "");
-        String prodImg = prodImgBase + prodImgPathFirstPart + prodImgPathMiddlePart + prodImgPathSecondPart;
-        return prodImg;
-    }
-
     @Override
     public List<ProductDTO> scrap(String searchProduct) {
 
@@ -73,8 +48,8 @@ public class MediaGalaxyScraper extends BaseScraper {
                 String prodName = prodItem.getString("name");
                 float prodPrice = prodItem.getFloat("price");
                 int prodStock = prodItem.getInt("stock_status");
-                String prodUrl = getUrl(prodItem);
-                String prodImg = getImg(prodItem);
+                String prodUrl = getProductUrl(prodItem);
+                String prodImg = getProductImg(prodItem);
 
                 if(prodStock==1) {
                     double similarityCoefficient = Filter.getSimilarityCoefficient(searchProduct, prodName);
@@ -98,6 +73,31 @@ public class MediaGalaxyScraper extends BaseScraper {
         }
 
         return products;
+    }
+
+    private String buildUrl(String searchProduct) {
+        String productUrlName = searchProduct.replaceAll("\\s+","%2520");
+        String baseUrl = "https://cerberus.mediagalaxy.ro/catalog/search/";
+        String finalUrl = baseUrl + productUrlName;
+        System.out.println(finalUrl);
+        return finalUrl;
+    }
+
+    private String getProductUrl(JSONObject prodItem) {
+        String prodUrlBase = "https://mediagalaxy.ro/";
+        String prodUrlPath = prodItem.getString("url_key");
+        String prodUrl = prodUrlBase + prodUrlPath;
+        return prodUrl;
+    }
+
+    private String getProductImg(JSONObject prodItem) {
+        String prodImgBase = "https://lcdn.altex.ro/resize";
+        String prodImgPath = prodItem.getString("image");
+        String prodImgPathMiddlePart = "/16fa6a9aef7ffd6209d5fd9338ffa0b1";
+        String prodImgPathSecondPart = prodImgPath.substring(26);
+        String prodImgPathFirstPart = prodImgPath.replace(prodImgPathSecondPart, "");
+        String prodImg = prodImgBase + prodImgPathFirstPart + prodImgPathMiddlePart + prodImgPathSecondPart;
+        return prodImg;
     }
 
 }

@@ -13,50 +13,6 @@ import com.pricescrapper.types.ProductSourceType;
 
 public class PcGarageScraper extends BaseScraper {
 
-	private String buildUrl(String searchProduct) {
-		String productUrlName = searchProduct.replaceAll("\\s+","+");
-		String baseUrl = "https://www.pcgarage.ro/cauta/";
-		String finalUrl = baseUrl + productUrlName;
-		System.out.println(finalUrl);
-		return finalUrl;
-	}
-
-	private String getName(Element prod) {
-		String prodName = prod.select("div.product-box div.pb-specs-container div.pb-name a").attr("title");
-		return prodName;
-	}
-
-	private float getPrice(Element prod) {
-		String prodPriceString = prod.select("div.product-box div.pb-price-container div.pb-price p.price").text();
-		prodPriceString = prodPriceString.replace(prodPriceString.substring(prodPriceString.length() - 4),"");
-		prodPriceString = prodPriceString.replace(".", "");
-		prodPriceString = prodPriceString.replace(",", ".");
-		float prodPrice = Float.parseFloat(prodPriceString);
-		return prodPrice;
-	}
-
-	private int getStock(Element prod) {
-		String prodStockText = prod.select("div.product-box div.pb-price-container div.pb-availability").text();
-		int prodStock;
-		if (prodStockText.equals("Nu este in stoc")) {
-			prodStock = 0;
-		} else {
-			prodStock = 1;
-		}
-		return prodStock;
-	}
-
-	private String getUrl(Element prod) {
-		String prodUrl = prod.select("div.product-box div.pb-specs-container div.pb-name a").attr("href");
-		return prodUrl;
-	}
-
-	private String getImg(Element prod) {
-		Elements prodImgElem = prod.select("div.product-box div.pb-image a");
-		String prodImg = prodImgElem.select("img").attr("src");
-		return prodImg;
-	}
-
 	@Override
 	public List<ProductDTO> scrap(String searchProduct) {
 
@@ -74,11 +30,11 @@ public class PcGarageScraper extends BaseScraper {
 
 			for (Element prod : list) {
 				try {
-					String prodName = getName(prod);
-					float prodPrice = getPrice(prod);
-					int prodStock = getStock(prod);
-					String prodUrl = getUrl(prod);
-					String prodImg = getImg(prod);
+					String prodName = getProductName(prod);
+					float prodPrice = getProductPrice(prod);
+					int prodStock = getProductStock(prod);
+					String prodUrl = getProductUrl(prod);
+					String prodImg = getProductImg(prod);
 
 					if(prodStock==1) {
 						double similarityCoefficient = Filter.getSimilarityCoefficient(searchProduct, prodName);
@@ -106,6 +62,50 @@ public class PcGarageScraper extends BaseScraper {
 		}
 
 		return products;
+	}
+
+	private String buildUrl(String searchProduct) {
+		String productUrlName = searchProduct.replaceAll("\\s+","+");
+		String baseUrl = "https://www.pcgarage.ro/cauta/";
+		String finalUrl = baseUrl + productUrlName;
+		System.out.println(finalUrl);
+		return finalUrl;
+	}
+
+	private String getProductName(Element prod) {
+		String prodName = prod.select("div.product-box div.pb-specs-container div.pb-name a").attr("title");
+		return prodName;
+	}
+
+	private float getProductPrice(Element prod) {
+		String prodPriceString = prod.select("div.product-box div.pb-price-container div.pb-price p.price").text();
+		prodPriceString = prodPriceString.replace(prodPriceString.substring(prodPriceString.length() - 4),"");
+		prodPriceString = prodPriceString.replace(".", "");
+		prodPriceString = prodPriceString.replace(",", ".");
+		float prodPrice = Float.parseFloat(prodPriceString);
+		return prodPrice;
+	}
+
+	private int getProductStock(Element prod) {
+		String prodStockText = prod.select("div.product-box div.pb-price-container div.pb-availability").text();
+		int prodStock;
+		if (prodStockText.equals("Nu este in stoc")) {
+			prodStock = 0;
+		} else {
+			prodStock = 1;
+		}
+		return prodStock;
+	}
+
+	private String getProductUrl(Element prod) {
+		String prodUrl = prod.select("div.product-box div.pb-specs-container div.pb-name a").attr("href");
+		return prodUrl;
+	}
+
+	private String getProductImg(Element prod) {
+		Elements prodImgElem = prod.select("div.product-box div.pb-image a");
+		String prodImg = prodImgElem.select("img").attr("src");
+		return prodImg;
 	}
 
 }
