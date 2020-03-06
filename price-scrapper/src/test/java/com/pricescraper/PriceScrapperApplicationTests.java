@@ -1,4 +1,4 @@
-package com.pricescrapper;
+package com.pricescraper;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

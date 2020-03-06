@@ -1,4 +1,4 @@
-package com.pricescrapper.scrapper;
+package com.pricescraper.scrapper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,20 +8,20 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pricescrapper.dto.ProductDTO;
+import com.pricescraper.model.Product;
 
-import com.pricescrapper.filter.Filter;
-import com.pricescrapper.types.ProductSourceType;
+import com.pricescraper.filter.Filter;
+import com.pricescraper.types.ProductSourceType;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class MediaGalaxyScraper extends BaseScraper {
 
     @Override
-    public List<ProductDTO> scrap(String searchProduct) {
+    public List<Product> scrap(String searchProduct) {
 
         System.out.println("MediaGalaxy searcing for product: " + searchProduct);
-        List<ProductDTO> productsList = new ArrayList<ProductDTO>();
+        List<Product> productsList = new ArrayList<Product>();
         boolean prodExists = true;
         int pageCounter = 1;
 
@@ -37,7 +37,7 @@ public class MediaGalaxyScraper extends BaseScraper {
                 //System.out.println("response code: " + responseCode);
 
                 if(responseCode == 200) {
-                    List<ProductDTO> productsCurrentPage = extractData(con, searchProduct);
+                    List<Product> productsCurrentPage = extractData(con, searchProduct);
                     if(productsCurrentPage.isEmpty()) {
                         prodExists = false;
                     }
@@ -57,8 +57,8 @@ public class MediaGalaxyScraper extends BaseScraper {
         System.out.println("[MEDIAGALAXY] Numarul de produse (in stoc): " + productsList.size());
         return productsList;
     }
-    private List<ProductDTO> extractData(HttpURLConnection con, String searchProduct) throws IOException {
-        List<ProductDTO> products = new ArrayList<ProductDTO>();
+    private List<Product> extractData(HttpURLConnection con, String searchProduct) throws IOException {
+        List<Product> products = new ArrayList<Product>();
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
         StringBuffer response = new StringBuffer();
@@ -82,7 +82,7 @@ public class MediaGalaxyScraper extends BaseScraper {
             if (prodStock == 1) {
                 double similarityCoefficient = Filter.getSimilarityCoefficient(searchProduct, prodName);
 
-                ProductDTO currentProduct = ProductDTO.builder()
+                Product currentProduct = Product.builder()
                         .name(prodName)
                         .price(prodPrice)
                         .stock(prodStock)

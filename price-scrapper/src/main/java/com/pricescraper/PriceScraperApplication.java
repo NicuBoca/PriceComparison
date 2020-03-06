@@ -1,13 +1,13 @@
-package com.pricescrapper;
+package com.pricescraper;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PriceScrapperApplication {
+public class PriceScraperApplication {
 
     public static void main(String[] args) throws Exception {
-        SpringApplication.run(PriceScrapperApplication.class, args);
+        SpringApplication.run(PriceScraperApplication.class, args);
     }
 
 }

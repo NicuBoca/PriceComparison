@@ -11,7 +11,7 @@
     <groupId>com</groupId>
     <artifactId>price-scrapper</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>price-com.pricescrapper.scrapper</name>
+    <name>price-com.pricescraper.scrapper</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>

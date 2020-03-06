@@ -1,4 +1,4 @@
-package com.pricescrapper.filter;
+package com.pricescraper.filter;
 
 import org.apache.commons.text.similarity.JaccardSimilarity;
 

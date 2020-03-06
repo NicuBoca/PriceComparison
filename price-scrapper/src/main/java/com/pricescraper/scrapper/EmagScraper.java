@@ -1,23 +1,23 @@
-package com.pricescrapper.scrapper;
+package com.pricescraper.scrapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pricescrapper.dto.ProductDTO;
-import com.pricescrapper.filter.Filter;
+import com.pricescraper.model.Product;
+import com.pricescraper.filter.Filter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import com.pricescrapper.types.ProductSourceType;
+import com.pricescraper.types.ProductSourceType;
 
 public class EmagScraper extends BaseScraper {
 
     @Override
-    public List<ProductDTO> scrap(String searchProduct) {
+    public List<Product> scrap(String searchProduct) {
 
         System.out.println("Emag searcing for product: " + searchProduct);
-        List<ProductDTO> productsList = new ArrayList<ProductDTO>();
+        List<Product> productsList = new ArrayList<Product>();
 
         try {
             String searchUrlTest = buildUrl(searchProduct, 1);
@@ -26,7 +26,7 @@ public class EmagScraper extends BaseScraper {
                     .timeout(30 * 1000)
                     .get();
 
-            List<ProductDTO> productsCurrentPage1 = extractData(docTest, searchProduct);
+            List<Product> productsCurrentPage1 = extractData(docTest, searchProduct);
             productsList.addAll(productsCurrentPage1);
 
             int nrOfPages = getNumberOfPages(docTest);
@@ -40,7 +40,7 @@ public class EmagScraper extends BaseScraper {
                             .timeout(30 * 1000)
                             .get();
 
-                    List<ProductDTO> productsCurrentPage = extractData(doc, searchProduct);
+                    List<Product> productsCurrentPage = extractData(doc, searchProduct);
                     if(productsCurrentPage.isEmpty()) {
                         break;
                     }
@@ -55,8 +55,8 @@ public class EmagScraper extends BaseScraper {
         return productsList;
     }
 
-    private List<ProductDTO> extractData(Document doc, String searchProduct) {
-        List<ProductDTO> products = new ArrayList<ProductDTO>();
+    private List<Product> extractData(Document doc, String searchProduct) {
+        List<Product> products = new ArrayList<Product>();
         Elements list = doc.select("div#card_grid div.card-item div.card div.card-section-wrapper");
 
         for (Element prod : list) {
@@ -70,7 +70,7 @@ public class EmagScraper extends BaseScraper {
                 if (prodStock == 1) {
                     double similarityCoefficient = Filter.getSimilarityCoefficient(searchProduct, prodName);
 
-                    ProductDTO currentProduct = ProductDTO.builder()
+                    Product currentProduct = Product.builder()
                             .name(prodName)
                             .price(prodPrice)
                             .stock(prodStock)

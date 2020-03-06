@@ -1,7 +1,7 @@
-package com.pricescrapper.dto;
+package com.pricescraper.model;
 
 import lombok.*;
-import com.pricescrapper.types.ProductSourceType;
+import com.pricescraper.types.ProductSourceType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @ToString
 @Document(collection = "product")
-public class ProductDTO {
+public class Product {
 	@Id
 	private String id;
 	private String name;

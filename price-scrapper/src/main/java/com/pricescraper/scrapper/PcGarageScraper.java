@@ -1,23 +1,23 @@
-package com.pricescrapper.scrapper;
+package com.pricescraper.scrapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pricescrapper.dto.ProductDTO;
-import com.pricescrapper.filter.Filter;
+import com.pricescraper.model.Product;
+import com.pricescraper.filter.Filter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import com.pricescrapper.types.ProductSourceType;
+import com.pricescraper.types.ProductSourceType;
 
 public class PcGarageScraper extends BaseScraper {
 
 	@Override
-	public List<ProductDTO> scrap(String searchProduct) {
+	public List<Product> scrap(String searchProduct) {
 
 		System.out.println("PcGarage searcing for product: " + searchProduct);
-		List<ProductDTO> products = new ArrayList<ProductDTO>();
+		List<Product> products = new ArrayList<Product>();
 
 		try {
 			String searchUrl = buildUrl(searchProduct);
@@ -39,7 +39,7 @@ public class PcGarageScraper extends BaseScraper {
 					if(prodStock==1) {
 						double similarityCoefficient = Filter.getSimilarityCoefficient(searchProduct, prodName);
 
-						ProductDTO currentProduct = ProductDTO.builder()
+						Product currentProduct = Product.builder()
 								.name(prodName)
 								.price(prodPrice)
 								.stock(prodStock)

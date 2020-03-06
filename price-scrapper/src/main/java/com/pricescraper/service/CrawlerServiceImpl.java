@@ -1,8 +1,8 @@
-package com.pricescrapper.service;
+package com.pricescraper.service;
 
-import com.pricescrapper.dto.ProductDTO;
-import com.pricescrapper.repository.ProductRepository;
-import com.pricescrapper.scrapper.*;
+import com.pricescraper.model.Product;
+import com.pricescraper.repository.ProductRepository;
+import com.pricescraper.scrapper.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,10 +27,10 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     @Override
     public void crawl(String searchProduct) {
-        productRepository.deleteAll();
+        //productRepository.deleteAll();
         List<BaseScraper> crawlJobs = initCrawler();
         for (BaseScraper scrapper : crawlJobs) {
-            List<ProductDTO> productList = scrapper.getProducts(searchProduct);
+            List<Product> productList = scrapper.getProducts(searchProduct);
             productRepository.saveAll(productList);
         }
         System.out.println("Finish!");

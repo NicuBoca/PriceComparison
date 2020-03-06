@@ -1,4 +1,4 @@
-package com.pricescrapper.types;
+package com.pricescraper.types;
 
 import lombok.Getter;
 
