@@ -82,7 +82,7 @@ public class Filter {
 
         productFoundName = productFoundName.toLowerCase();
         String[] productFoundWords = productFoundName.split(" ");
-        int noProductFoundWords =  productFoundWords.length;
+        int noProductFoundWords = productFoundWords.length;
 
         double productSearchWordsSimilarity[] = new double[noProductSearchWords];
 
@@ -95,11 +95,11 @@ public class Filter {
             }
         }
 
-        double sum=0;
+        double sum = 0;
         for (int k = 0; k < noProductSearchWords; k++) {
             sum += productSearchWordsSimilarity[k];
         }
-        double similarityCoefficient = sum/noProductSearchWords;
+        double similarityCoefficient = sum / noProductSearchWords;
         return similarityCoefficient;
     }
 }

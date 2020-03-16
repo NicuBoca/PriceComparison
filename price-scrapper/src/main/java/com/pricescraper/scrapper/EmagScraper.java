@@ -32,8 +32,8 @@ public class EmagScraper extends BaseScraper {
             int nrOfPages = getNumberOfPages(docTest);
             System.out.println("[EMAG] Numarul de pagini (total): " + nrOfPages);
 
-            if(nrOfPages > 1) {
-                for(int i=2; i<=nrOfPages; i++) {
+            if (nrOfPages > 1) {
+                for (int i = 2; i <= nrOfPages; i++) {
                     String searchUrl = buildUrl(searchProduct, i);
                     System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
                     Document doc = Jsoup.connect(searchUrl)
@@ -41,7 +41,7 @@ public class EmagScraper extends BaseScraper {
                             .get();
 
                     List<Product> productsCurrentPage = extractData(doc, searchProduct);
-                    if(productsCurrentPage.isEmpty()) {
+                    if (productsCurrentPage.isEmpty()) {
                         break;
                     }
                     productsList.addAll(productsCurrentPage);
@@ -102,9 +102,9 @@ public class EmagScraper extends BaseScraper {
         Elements pageList = doc.select("div.listing-panel-footer div.row ul#listing-paginator li");
         for (Element page : pageList) {
             String data = page.select("a").attr("data-page");
-            if(data!="") {
+            if (data != "") {
                 int currentNr = Integer.parseInt(data);
-                if(currentNr > nrOfPages) {
+                if (currentNr > nrOfPages) {
                     nrOfPages = currentNr;
                 }
             }
@@ -133,7 +133,7 @@ public class EmagScraper extends BaseScraper {
         int prodStock;
         if (prodStockText.equals("stoc epuizat") || prodStockText.equals("indisponibil")) {
             prodStock = 0;
-        } else if(prodStockText.isEmpty()) {
+        } else if (prodStockText.isEmpty()) {
             prodStock = 2; // resigilat
         } else {
             prodStock = 1;

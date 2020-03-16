@@ -27,7 +27,7 @@ public class MediaGalaxyScraper extends BaseScraper {
 
         try {
 
-            while(prodExists) {
+            while (prodExists) {
                 String searchUrl = buildUrl(searchProduct, pageCounter);
                 URL obj = new URL(searchUrl);
                 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -36,9 +36,9 @@ public class MediaGalaxyScraper extends BaseScraper {
                 int responseCode = con.getResponseCode();
                 //System.out.println("response code: " + responseCode);
 
-                if(responseCode == 200) {
+                if (responseCode == 200) {
                     List<Product> productsCurrentPage = extractData(con, searchProduct);
-                    if(productsCurrentPage.isEmpty()) {
+                    if (productsCurrentPage.isEmpty()) {
                         prodExists = false;
                     }
                     productsList.addAll(productsCurrentPage);
@@ -53,17 +53,18 @@ public class MediaGalaxyScraper extends BaseScraper {
             e.printStackTrace();
         }
 
-        System.out.println("[MEDIAGALAXY] Numarul de pagini (parcurse): " + (pageCounter-1));
+        System.out.println("[MEDIAGALAXY] Numarul de pagini (parcurse): " + (pageCounter - 1));
         System.out.println("[MEDIAGALAXY] Numarul de produse (in stoc): " + productsList.size());
         return productsList;
     }
+
     private List<Product> extractData(HttpURLConnection con, String searchProduct) throws IOException {
         List<Product> products = new ArrayList<Product>();
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
         StringBuffer response = new StringBuffer();
 
-        while((inputLine = in.readLine()) != null) {
+        while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
         }
         in.close();
@@ -71,7 +72,7 @@ public class MediaGalaxyScraper extends BaseScraper {
         JSONObject resObject = new JSONObject(response.toString());
         JSONArray productsArray = (JSONArray) resObject.get("products");
 
-        for(int i=0; i<productsArray.length(); i++) {
+        for (int i = 0; i < productsArray.length(); i++) {
             JSONObject prodItem = (JSONObject) productsArray.get(i);
             String prodName = prodItem.getString("name");
             float prodPrice = prodItem.getFloat("price");
@@ -99,7 +100,7 @@ public class MediaGalaxyScraper extends BaseScraper {
     }
 
     private String buildUrl(String searchProduct, int pageNumber) {
-        String productUrlName = searchProduct.replaceAll("\\s+","%2520");
+        String productUrlName = searchProduct.replaceAll("\\s+", "%2520");
         String baseUrl = "https://cerberus.mediagalaxy.ro/catalog/search/";
         String finalUrl = baseUrl + productUrlName + "?page=" + pageNumber;
         System.out.println(finalUrl);
