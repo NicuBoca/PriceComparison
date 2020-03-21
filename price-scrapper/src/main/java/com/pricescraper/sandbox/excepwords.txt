@@ -1,3 +1,4 @@
+categorie
 laptop
 notebook
 ultrabook
@@ -11,3 +12,5 @@ inch
 seria
 tv
 televizor
+aparat
+camera
