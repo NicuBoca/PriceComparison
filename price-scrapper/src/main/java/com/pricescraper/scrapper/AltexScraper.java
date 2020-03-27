@@ -10,7 +10,7 @@ import java.util.List;
 
 import com.pricescraper.model.Product;
 
-import com.pricescraper.filter.Filter;
+import com.pricescraper.filter.SearchSimilarity;
 import com.pricescraper.types.ProductSourceType;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -81,7 +81,7 @@ public class AltexScraper extends BaseScraper {
 			String prodImg = getProductImg(prodItem);
 
 			if (prodStock == 1) {
-				double similarityCoefficient = Filter.getSimilarityCoefficient(searchProduct, prodName);
+				double similarityCoefficient = SearchSimilarity.getSimilarityBetweenSearchAndFoundName(searchProduct, prodName);
 
 				Product currentProduct = Product.builder()
 						.name(prodName)

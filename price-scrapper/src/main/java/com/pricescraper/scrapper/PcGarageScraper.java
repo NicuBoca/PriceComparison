@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.pricescraper.model.Product;
-import com.pricescraper.filter.Filter;
+import com.pricescraper.filter.SearchSimilarity;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -37,7 +37,7 @@ public class PcGarageScraper extends BaseScraper {
                     String prodImg = getProductImg(prod);
 
                     if (prodStock == 1) {
-                        double similarityCoefficient = Filter.getSimilarityCoefficient(searchProduct, prodName);
+                        double similarityCoefficient = SearchSimilarity.getSimilarityBetweenSearchAndFoundName(searchProduct, prodName);
 
                         Product currentProduct = Product.builder()
                                 .name(prodName)

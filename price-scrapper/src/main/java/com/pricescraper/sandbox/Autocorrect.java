@@ -1,13 +1,10 @@
-package com.pricescraper.filter;
+package com.pricescraper.sandbox;
 
-import org.apache.commons.text.similarity.JaccardSimilarity;
-
-public class Filter {
-
+public class Autocorrect {
 //    private List<ProductDto> products;
 //    private String searchProduct;
 //
-//    public Filter(List<ProductDto> products, String searchProduct) {
+//    public Autocorrect(List<ProductDto> products, String searchProduct) {
 //        this.products = products;
 //        this.searchProduct = searchProduct.toLowerCase();
 //    }
@@ -73,33 +70,4 @@ public class Filter {
 //        return avgSimilarity;
 //    }
 
-    public static double getSimilarityCoefficient(String productSearchName, String productFoundName) {
-        JaccardSimilarity js = new JaccardSimilarity();
-
-        productSearchName = productSearchName.toLowerCase();
-        String[] productSearchWords = productSearchName.split(" ");
-        int noProductSearchWords = productSearchWords.length;
-
-        productFoundName = productFoundName.toLowerCase();
-        String[] productFoundWords = productFoundName.split(" ");
-        int noProductFoundWords = productFoundWords.length;
-
-        double productSearchWordsSimilarity[] = new double[noProductSearchWords];
-
-        for (int i = 0; i < noProductSearchWords; i++) {
-            for (int j = 0; j < noProductFoundWords; j++) {
-                double currentSimilarity = js.apply(productSearchWords[i], productFoundWords[j]);
-                if (currentSimilarity > productSearchWordsSimilarity[i]) {
-                    productSearchWordsSimilarity[i] = currentSimilarity;
-                }
-            }
-        }
-
-        double sum = 0;
-        for (int k = 0; k < noProductSearchWords; k++) {
-            sum += productSearchWordsSimilarity[k];
-        }
-        double similarityCoefficient = sum / noProductSearchWords;
-        return similarityCoefficient;
-    }
 }

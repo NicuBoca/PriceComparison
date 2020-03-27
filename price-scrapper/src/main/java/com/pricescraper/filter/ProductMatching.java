@@ -1,4 +1,4 @@
-package com.pricescraper.sandbox;
+package com.pricescraper.filter;
 
 import org.apache.commons.text.similarity.JaccardSimilarity;
 
@@ -8,16 +8,14 @@ import java.util.*;
 
 import static org.apache.commons.lang3.StringUtils.contains;
 
-public class SimFilter {
-    private static Set<String> excepwords;
+public class ProductMatching {
+    private static Set<String> exceptions;
     private static Set<String> stopwords;
+    private static final List<String> specialChars = Arrays.asList(",", "-", "\"", "'", "!", "(", ")", "{", "}", "[", "]", "^",
+            "~", "*", "?", ":", "\\(o\\)", "\u00B0", "\\(C\\)", "\u00a9", "\\(R\\)", "\u00AE", "\\(TM\\)", "\u2122");
 
-    public static void productSim() {
-        addExceptionsToSet();
-
-        List<String> specialChars = Arrays.asList(",", "-", "\"", "'", "!", "(", ")", "{", "}", "[", "]", "^",
-                "~", "*", "?", ":", "\\(o\\)", "\u00B0", "\\(C\\)", "\u00a9", "\\(R\\)", "\u00AE", "\\(TM\\)", "\u2122");
-
+    public static boolean isSameProductByName(String name1, String name2) {
+        setStopwordsAndExceptions();
         double precision = 0.8;
 
 //        String name1 = "Laptop ultraportabil ASUS ZenBook Pro Duo UX581GV cu procesor Intel® Core™ i9-9980HK pana la 5.00 GHz Coffee Lake, 15.6\", 4K, 32GB, 1TB SSD M.2, NVIDIA GeForce RTX 2060 6GB, Windows 10 Pro, Celestial Blue";
@@ -32,12 +30,12 @@ public class SimFilter {
 //        String name1 = "Frigider cu o usa BOSCH KSV36AI3P, 346 l, H 186 cm, Clasa A++, inox";
 //        String name2 = "Congelator Bosch GSN36AI3P, 242 l, 4 sertare, Clasa A++, No Frost, H 186 cm, Inox";
 
-        String name1 = "Aparat foto digital Sony Cyber-Shot DSC-RX100, 20.2MP, FullHD, Black";
-        String name2 = "Camera foto digitala SONY DSC-RX100, 20.2 MP, negru";
+//        String name1 = "Aparat foto digital Sony Cyber-Shot DSC-RX100, 20.2MP, FullHD, Black";
+//        String name2 = "Camera foto digitala SONY DSC-RX100, 20.2 MP, negru";
 //        String name2 = "Camera foto digitala SONY Cyber-shot RX100 V, 20.1 MP, 4K, Wi-Fi, negru";
 
 //        String name1 = "Uscatoare de par: Remington AC9096";
-//        String name1 = "Uscator de par Remington AC9096, 2400 W, 3 Trepte temperatura, 2 Viteze, Turbo, Difuzor volum, Concentrator, Rosu";
+//        String name2 = "Uscator de par Remington AC9096, 2400 W, 3 Trepte temperatura, 2 Viteze, Turbo, Difuzor volum, Concentrator, Rosu";
 //        String name2 = "Uscator de par REMINGTON Silk AC9096, 2400W, 6 viteze, 6 trepte temperatura, rosu-negru";
 
         String prod1, prod2;
@@ -49,7 +47,7 @@ public class SimFilter {
             prod2 = name1.toLowerCase();
         }
 
-        // daca numele produsului nu contine detalii tehnice
+        // daca numele produsului nu contine detalii tehnice (beta)
         if (prod1.length() < prod2.length() / 2) {
             int indexEnd = prod2.indexOf(",");
             if (indexEnd != -1) {
@@ -68,19 +66,8 @@ public class SimFilter {
         String[] splitStr1 = prod1.split("\\s+");
         String[] splitStr2 = prod2.split("\\s+");
 
-        Set<String> setProd1 = new HashSet<>();
-        Set<String> setProd2 = new HashSet<>();
-
-        for (String word : splitStr1) {
-            if (!stopwords.contains(word) && !excepwords.contains(word)) {
-                setProd1.add(word);
-            }
-        }
-        for (String word : splitStr2) {
-            if (!stopwords.contains(word) && !excepwords.contains(word)) {
-                setProd2.add(word);
-            }
-        }
+        Set<String> setProd1 = filterForStopwordsAndExceptions(splitStr1);
+        Set<String> setProd2 = filterForStopwordsAndExceptions(splitStr2);
 
         System.out.println(setProd1.size());
         System.out.println(setProd1);
@@ -100,42 +87,56 @@ public class SimFilter {
 
         if (r2 >= precision) {
             System.out.println("DA");
+            return true;
         } else {
+            return isSameProductByDifferentWords(precision, setProd1, setProd2, nrCommon, nrTotalRef);
+        }
+    }
 
-            Set<String> differentWords = new HashSet<String>(setProd1);
-            for (String element : setProd2) {
-                // .add() returns false if element already exists
-                if (!differentWords.add(element)) {
-                    differentWords.remove(element);
+    private static boolean isSameProductByDifferentWords(double precision, Set<String> setProd1, Set<String> setProd2, double nrCommon, double nrTotalRef) {
+        Set<String> differentWords = new HashSet<String>(setProd1);
+        for (String element : setProd2) {
+            // .add() returns false if element already exists
+            if (!differentWords.add(element)) {
+                differentWords.remove(element);
+            }
+        }
+        System.out.println("------------");
+        int diffSize = differentWords.size();
+        System.out.println("Cuvinte diferite 1-2: " + diffSize);
+        System.out.println(differentWords);
+
+        for (String c1 : differentWords) {
+            for (String c2 : differentWords) {
+                if (!c2.equals(c1) &&
+                        c1.length() > 1 && c2.length() > 1 &&
+                        contains(c2, c1)) {
+                    nrCommon++;
                 }
             }
-            System.out.println("------------");
-            int diffSize = differentWords.size();
-            System.out.println("Cuvinte diferite 1-2: " + diffSize);
-            System.out.println(differentWords);
-
-            for (String c1 : differentWords) {
-                for (String c2 : differentWords) {
-                    if (!c2.equals(c1) &&
-                            c1.length() > 1 && c2.length() > 1 &&
-                            contains(c2, c1)) {
-                        nrCommon++;
-                    }
-                }
-            }
-
-            System.out.println("-->");
-            System.out.println("Cuvinte comune (2): " + nrCommon);
-            double r3 = nrCommon / nrTotalRef;
-            System.out.println(r3);
-            if (r3 >= precision) {
-                System.out.println("DA");
-            } else {
-                System.out.println("NU");
-            }
-
         }
 
+        System.out.println("-->");
+        System.out.println("Cuvinte comune (2): " + nrCommon);
+        double r3 = nrCommon / nrTotalRef;
+        System.out.println(r3);
+        if (r3 >= precision) {
+            System.out.println("DA");
+            return true;
+        } else {
+            System.out.println("NU");
+            return false;
+        }
+    }
+
+    private static Set<String> filterForStopwordsAndExceptions(String[] splittedName) {
+        Set<String> result = new HashSet<>();
+        for (String word : splittedName) {
+            if (!stopwords.contains(word) && !exceptions.contains(word)) {
+                result.add(word);
+            }
+        }
+        return result;
     }
 
     private static boolean getIndexJaccard(String s1, String s2) {
@@ -145,24 +146,22 @@ public class SimFilter {
         return indexJaccard > precisionJaccard;
     }
 
-    private static void addExceptionsToSet() {
-        Set<String> myExcepwords = new HashSet<>();
+    private static void setStopwordsAndExceptions() {
+        Set<String> myExceptions = new HashSet<>();
         Set<String> myStopwords = new HashSet<>();
         try {
-            Scanner scanner = new Scanner(new File("src/main/java/com/pricescraper/sandbox/excepwords.txt"));
+            Scanner scanner = new Scanner(new File("src/main/resources/filter/exceptions.txt"));
             while (scanner.hasNextLine()) {
-                myExcepwords.add(scanner.next());
+                myExceptions.add(scanner.next());
             }
-
-            scanner = new Scanner(new File("src/main/java/com/pricescraper/sandbox/stopwords.txt"));
+            scanner = new Scanner(new File("src/main/resources/filter/stopwords.txt"));
             while (scanner.hasNextLine()) {
                 myStopwords.add(scanner.next());
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        excepwords = myExcepwords;
+        exceptions = myExceptions;
         stopwords = myStopwords;
     }
 }

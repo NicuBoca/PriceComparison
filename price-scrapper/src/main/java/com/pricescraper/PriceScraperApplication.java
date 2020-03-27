@@ -1,6 +1,6 @@
 package com.pricescraper;
 
-import com.pricescraper.sandbox.SimFilter;
+import com.pricescraper.filter.ProductMatching;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -11,7 +11,7 @@ public class PriceScraperApplication {
         SpringApplication.run(PriceScraperApplication.class, args);
 
         //test
-        SimFilter.productSim();
+        ProductMatching.isSameProductByName();
     }
 
 }
