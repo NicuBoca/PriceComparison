@@ -21,4 +21,9 @@ public class Product {
 	private ProductSourceType source;
 	private String img;
 	private double similarity;
+	private int cluster;
+
+	public void setCluster(int cluster) {
+		this.cluster = cluster;
+	}
 }

@@ -22,6 +22,7 @@ public class ProductRestController {
     @RequestMapping(method = RequestMethod.GET, value = "/api/product/{product}")
     public ResponseEntity<List<Product>> getAllProducts(@PathVariable String product) {
         crawlerService.crawl(product);
+        crawlerService.cluster();
         return new ResponseEntity<>(productRepository.findAllByOrderBySimilarityDesc(), HttpStatus.OK);
     }
 }

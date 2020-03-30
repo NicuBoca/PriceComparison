@@ -1,5 +1,6 @@
 package com.pricescraper.filter;
 
+import com.pricescraper.model.Product;
 import org.apache.commons.text.similarity.JaccardSimilarity;
 
 import java.io.File;
@@ -14,7 +15,7 @@ public class ProductMatching {
     private static final List<String> specialChars = Arrays.asList(",", "-", "\"", "'", "!", "(", ")", "{", "}", "[", "]", "^",
             "~", "*", "?", ":", "\\(o\\)", "\u00B0", "\\(C\\)", "\u00a9", "\\(R\\)", "\u00AE", "\\(TM\\)", "\u2122");
 
-    public static boolean isSameProductByName(String name1, String name2) {
+    public static boolean isSameProductByName(Product p1, Product p2) {
         setStopwordsAndExceptions();
         double precision = 0.8;
 
@@ -38,73 +39,79 @@ public class ProductMatching {
 //        String name2 = "Uscator de par Remington AC9096, 2400 W, 3 Trepte temperatura, 2 Viteze, Turbo, Difuzor volum, Concentrator, Rosu";
 //        String name2 = "Uscator de par REMINGTON Silk AC9096, 2400W, 6 viteze, 6 trepte temperatura, rosu-negru";
 
-        String prod1, prod2;
-        if (name1.length() < name2.length()) {
-            prod1 = name1.toLowerCase();
-            prod2 = name2.toLowerCase();
+        if (p1.getSource() == p2.getSource()) {
+            return false;
         } else {
-            prod1 = name2.toLowerCase();
-            prod2 = name1.toLowerCase();
-        }
 
-        // daca numele produsului nu contine detalii tehnice (beta)
-        if (prod1.length() < prod2.length() / 2) {
-            int indexEnd = prod2.indexOf(",");
-            if (indexEnd != -1) {
-                prod2 = prod2.substring(0, indexEnd);
+            String name1 = p1.getName();
+            String name2 = p2.getName();
+            String prod1, prod2;
+            if (name1.length() < name2.length()) {
+                prod1 = name1.toLowerCase();
+                prod2 = name2.toLowerCase();
+            } else {
+                prod1 = name2.toLowerCase();
+                prod2 = name1.toLowerCase();
             }
-        }
 
-        for (String ch : specialChars) {
-            prod1 = prod1.replace(ch, " ");
-            prod2 = prod2.replace(ch, " ");
-        }
+            // daca numele produsului nu contine detalii tehnice (beta)
+            if (prod1.length() < prod2.length() / 2) {
+                int indexEnd = prod2.indexOf(",");
+                if (indexEnd != -1) {
+                    prod2 = prod2.substring(0, indexEnd);
+                }
+            }
 
-        System.out.println(prod1);
-        System.out.println(prod2);
+            for (String ch : specialChars) {
+                prod1 = prod1.replace(ch, " ");
+                prod2 = prod2.replace(ch, " ");
+            }
 
-        String[] splitStr1 = prod1.split("\\s+");
-        String[] splitStr2 = prod2.split("\\s+");
+//        System.out.println(prod1);
+//        System.out.println(prod2);
 
-        Set<String> setProd1 = filterForStopwordsAndExceptions(splitStr1);
-        Set<String> setProd2 = filterForStopwordsAndExceptions(splitStr2);
+            String[] splitStr1 = prod1.split("\\s+");
+            String[] splitStr2 = prod2.split("\\s+");
 
-        System.out.println(setProd1.size());
-        System.out.println(setProd1);
-        System.out.println(setProd2.size());
-        System.out.println(setProd2);
+            Set<String> setProd1 = filterForStopwordsAndExceptions(splitStr1);
+            Set<String> setProd2 = filterForStopwordsAndExceptions(splitStr2);
 
-        System.out.println("------------");
-        Set<String> commonWords = new HashSet<String>(setProd1);
-        commonWords.retainAll(setProd2);
-        System.out.println("Cuvinte comune prod 1-2: " + commonWords.size());
-        System.out.println(commonWords);
+//        System.out.println(setProd1.size());
+//        System.out.println(setProd1);
+//        System.out.println(setProd2.size());
+//        System.out.println(setProd2);
 
-        double nrCommon = commonWords.size();
-        double nrTotalRef = setProd1.size();
-        double r2 = nrCommon / nrTotalRef;
-        System.out.println(r2);
+//        System.out.println("------------");
+            Set<String> commonWords = new HashSet<String>(setProd1);
+            commonWords.retainAll(setProd2);
+//        System.out.println("Cuvinte comune prod 1-2: " + commonWords.size());
+//        System.out.println(commonWords);
 
-        if (r2 >= precision) {
-            System.out.println("DA");
-            return true;
-        } else {
-            return isSameProductByDifferentWords(precision, setProd1, setProd2, nrCommon, nrTotalRef);
+            double nrCommon = commonWords.size();
+            double nrTotalRef = setProd1.size();
+            double r2 = nrCommon / nrTotalRef;
+//        System.out.println(r2);
+
+            if (r2 >= precision) {
+//                System.out.println("Match");
+                return true;
+            } else {
+                return isSameProductByDifferentWords(precision, setProd1, setProd2, nrCommon, nrTotalRef);
+            }
         }
     }
 
     private static boolean isSameProductByDifferentWords(double precision, Set<String> setProd1, Set<String> setProd2, double nrCommon, double nrTotalRef) {
         Set<String> differentWords = new HashSet<String>(setProd1);
         for (String element : setProd2) {
-            // .add() returns false if element already exists
             if (!differentWords.add(element)) {
                 differentWords.remove(element);
             }
         }
-        System.out.println("------------");
+//        System.out.println("------------");
         int diffSize = differentWords.size();
-        System.out.println("Cuvinte diferite 1-2: " + diffSize);
-        System.out.println(differentWords);
+//        System.out.println("Cuvinte diferite 1-2: " + diffSize);
+//        System.out.println(differentWords);
 
         for (String c1 : differentWords) {
             for (String c2 : differentWords) {
@@ -116,15 +123,15 @@ public class ProductMatching {
             }
         }
 
-        System.out.println("-->");
-        System.out.println("Cuvinte comune (2): " + nrCommon);
+//        System.out.println("-->");
+//        System.out.println("Cuvinte comune (2): " + nrCommon);
         double r3 = nrCommon / nrTotalRef;
-        System.out.println(r3);
+//        System.out.println(r3);
         if (r3 >= precision) {
-            System.out.println("DA");
+//            System.out.println("Match");
             return true;
         } else {
-            System.out.println("NU");
+//            System.out.println("NU");
             return false;
         }
     }

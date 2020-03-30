@@ -11,7 +11,7 @@ public class PriceScraperApplication {
         SpringApplication.run(PriceScraperApplication.class, args);
 
         //test
-        ProductMatching.isSameProductByName();
+        //ProductMatching.isSameProductByName();
     }
 
 }
