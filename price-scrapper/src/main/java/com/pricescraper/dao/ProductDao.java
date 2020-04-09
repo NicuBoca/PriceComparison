@@ -1,7 +1,7 @@
 package com.pricescraper.dao;
 
-import com.pricescraper.model.Product;
+import com.pricescraper.model.ProductDTO;
 
 public interface ProductDao {
-    void saveProduct(Product product);
+    void saveProduct(ProductDTO product);
 }

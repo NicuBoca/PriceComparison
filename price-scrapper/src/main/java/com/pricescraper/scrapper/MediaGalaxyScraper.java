@@ -1,27 +1,27 @@
 package com.pricescraper.scrapper;
 
+import com.pricescraper.model.ProductBase;
+import com.pricescraper.model.ProductHistory;
+import com.pricescraper.types.ProductSourceType;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
-import com.pricescraper.model.Product;
-
-import com.pricescraper.filter.SearchSimilarity;
-import com.pricescraper.types.ProductSourceType;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class MediaGalaxyScraper extends BaseScraper {
 
     @Override
-    public List<Product> scrap(String searchProduct) {
+    public List<ProductBase> scrap(String searchProduct) {
 
         System.out.println("MediaGalaxy searcing for product: " + searchProduct);
-        List<Product> productsList = new ArrayList<Product>();
+        List<ProductBase> productsList = new ArrayList<ProductBase>();
         boolean prodExists = true;
         int pageCounter = 1;
 
@@ -37,7 +37,7 @@ public class MediaGalaxyScraper extends BaseScraper {
                 //System.out.println("response code: " + responseCode);
 
                 if (responseCode == 200) {
-                    List<Product> productsCurrentPage = extractData(con, searchProduct);
+                    List<ProductBase> productsCurrentPage = extractData(con, searchProduct);
                     if (productsCurrentPage.isEmpty()) {
                         prodExists = false;
                     }
@@ -54,12 +54,12 @@ public class MediaGalaxyScraper extends BaseScraper {
         }
 
         System.out.println("[MEDIAGALAXY] Numarul de pagini (parcurse): " + (pageCounter - 1));
-        System.out.println("[MEDIAGALAXY] Numarul de produse (in stoc): " + productsList.size());
+        System.out.println("[MEDIAGALAXY] Numarul de produse: " + productsList.size());
         return productsList;
     }
 
-    private List<Product> extractData(HttpURLConnection con, String searchProduct) throws IOException {
-        List<Product> products = new ArrayList<Product>();
+    private List<ProductBase> extractData(HttpURLConnection con, String searchProduct) throws IOException {
+        List<ProductBase> products = new ArrayList<ProductBase>();
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
         StringBuffer response = new StringBuffer();
@@ -74,27 +74,31 @@ public class MediaGalaxyScraper extends BaseScraper {
 
         for (int i = 0; i < productsArray.length(); i++) {
             JSONObject prodItem = (JSONObject) productsArray.get(i);
-            String prodName = prodItem.getString("name");
-            float prodPrice = prodItem.getFloat("price");
             int prodStock = prodItem.getInt("stock_status");
+
+            String prodName = prodItem.getString("name");
+            double prodPrice = prodItem.getFloat("price");
             String prodUrl = getProductUrl(prodItem);
             String prodImg = getProductImg(prodItem);
+            String date = dateFormat.format(new Date());
 
-            if (prodStock == 1) {
-                double similarityCoefficient = SearchSimilarity.getSimilarityBetweenSearchAndFoundName(searchProduct, prodName);
+            ProductHistory newProductHistory = ProductHistory.builder()
+                    .price(prodPrice)
+                    .date(date)
+                    .stock(prodStock)
+                    .build();
+            List<ProductHistory> productHistories = new ArrayList<ProductHistory>();
+            productHistories.add(newProductHistory);
 
-                Product currentProduct = Product.builder()
-                        .name(prodName)
-                        .price(prodPrice)
-                        .stock(prodStock)
-                        .url(prodUrl)
-                        .source(ProductSourceType.MEDIAGALAXY)
-                        .img(prodImg)
-                        .similarity(similarityCoefficient)
-                        .build();
+            ProductBase newProduct = ProductBase.builder()
+                    .name(prodName)
+                    .source(ProductSourceType.MEDIAGALAXY)
+                    .url(prodUrl)
+                    .img(prodImg)
+                    .history(productHistories)
+                    .build();
 
-                products.add(currentProduct);
-            }
+            products.add(newProduct);
         }
         return products;
     }

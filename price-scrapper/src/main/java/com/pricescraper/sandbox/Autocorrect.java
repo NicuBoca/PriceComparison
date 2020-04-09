@@ -1,15 +1,8 @@
 package com.pricescraper.sandbox;
 
 public class Autocorrect {
-//    private List<ProductDto> products;
-//    private String searchProduct;
-//
-//    public Autocorrect(List<ProductDto> products, String searchProduct) {
-//        this.products = products;
-//        this.searchProduct = searchProduct.toLowerCase();
-//    }
-//
-//    public List<ProductDto> similarityFilter() {
+
+//    public List<ProductDto> similarityFilter(List<ProductDto> products, String searchProduct) {
 //        List<ProductDto> filteredProducts = new ArrayList<ProductDto>();
 //        String[] arrOfSearchName = searchProduct.split(" ");
 //        int arrSearchNameLength = arrOfSearchName.length;

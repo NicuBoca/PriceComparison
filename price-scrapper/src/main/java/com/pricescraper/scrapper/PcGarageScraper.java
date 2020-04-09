@@ -1,23 +1,22 @@
 package com.pricescraper.scrapper;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.pricescraper.model.Product;
-import com.pricescraper.filter.SearchSimilarity;
+import com.pricescraper.model.ProductBase;
+import com.pricescraper.model.ProductDTO;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import com.pricescraper.types.ProductSourceType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PcGarageScraper extends BaseScraper {
 
     @Override
-    public List<Product> scrap(String searchProduct) {
+    public List<ProductBase> scrap(String searchProduct) {
 
         System.out.println("PcGarage searcing for product: " + searchProduct);
-        List<Product> products = new ArrayList<Product>();
+        List<ProductDTO> products = new ArrayList<ProductDTO>();
 
         try {
             String searchUrl = buildUrl(searchProduct);
@@ -37,20 +36,19 @@ public class PcGarageScraper extends BaseScraper {
                     String prodImg = getProductImg(prod);
 
                     if (prodStock == 1) {
-                        double similarityCoefficient = SearchSimilarity.getSimilarityBetweenSearchAndFoundName(searchProduct, prodName);
+//                        double similarityCoefficient = SearchSimilarity.getSimilarityBetweenSearchAndFoundName(searchProduct, prodName);
 
-                        Product currentProduct = Product.builder()
-                                .name(prodName)
-                                .price(prodPrice)
-                                .stock(prodStock)
-                                .url(prodUrl)
-                                .source(ProductSourceType.PCGARAGE)
-                                .img(prodImg)
-                                .similarity(similarityCoefficient)
-                                .build();
+//                        ProductDTO currentProduct = ProductDTO.builder()
+//                                .name(prodName)
+//                                .price(prodPrice)
+//                                .stock(prodStock)
+//                                .url(prodUrl)
+//                                .source(ProductSourceType.PCGARAGE)
+//                                .img(prodImg)
+//                                .similarity(similarityCoefficient)
+//                                .build();
 
-                        //productDAO.insertProduct(currentProduct);
-                        products.add(currentProduct);
+//                        products.add(currentProduct);
                     }
 
                 } catch (Exception e) {
@@ -61,7 +59,7 @@ public class PcGarageScraper extends BaseScraper {
             e.printStackTrace();
         }
 
-        return products;
+        return null;
     }
 
     private String buildUrl(String searchProduct) {

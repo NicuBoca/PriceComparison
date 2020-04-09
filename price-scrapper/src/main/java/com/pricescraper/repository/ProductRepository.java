@@ -1,17 +1,20 @@
 package com.pricescraper.repository;
 
-import com.pricescraper.model.Product;
+import com.pricescraper.model.ProductBase;
+import com.pricescraper.model.ProductDTO;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface ProductRepository extends MongoRepository<Product, Long>, CrudRepository<Product, Long> {
+public interface ProductRepository extends MongoRepository<ProductBase, Long>, CrudRepository<ProductBase, Long> {
 
-    List<Product> findBySimilarity(double similarity);
+//    List<ProductDTO> findBySimilarity(double similarity);
+//
+//    List<ProductDTO> findAllByOrderBySimilarityDesc();
 
-    List<Product> findAllByOrderBySimilarityDesc();
+    List<ProductDTO> findDistinctByName();
 
-    List<Product> findDistinctByName();
+    List<ProductBase> findBy();
 
 }

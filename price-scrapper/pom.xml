@@ -63,13 +63,6 @@
             <version>3.9</version>
         </dependency>
 
-        <!-- mongodb java driver -->
-        <!--        <dependency>-->
-        <!--            <groupId>org.mongodb</groupId>-->
-        <!--            <artifactId>mongo-java-driver</artifactId>-->
-        <!--            <version>3.6.0</version>-->
-        <!--        </dependency>-->
-
         <!-- Spring data mongodb -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

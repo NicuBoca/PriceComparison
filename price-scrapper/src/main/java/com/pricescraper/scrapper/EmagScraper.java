@@ -1,23 +1,24 @@
 package com.pricescraper.scrapper;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.pricescraper.model.Product;
-import com.pricescraper.filter.SearchSimilarity;
+import com.pricescraper.model.ProductBase;
+import com.pricescraper.model.ProductHistory;
+import com.pricescraper.types.ProductSourceType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import com.pricescraper.types.ProductSourceType;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class EmagScraper extends BaseScraper {
 
     @Override
-    public List<Product> scrap(String searchProduct) {
+    public List<ProductBase> scrap(String searchProduct) {
 
         System.out.println("Emag searcing for product: " + searchProduct);
-        List<Product> productsList = new ArrayList<Product>();
+        List<ProductBase> productsList = new ArrayList<ProductBase>();
 
         try {
             String searchUrlTest = buildUrl(searchProduct, 1);
@@ -26,7 +27,7 @@ public class EmagScraper extends BaseScraper {
                     .timeout(30 * 1000)
                     .get();
 
-            List<Product> productsCurrentPage1 = extractData(docTest, searchProduct);
+            List<ProductBase> productsCurrentPage1 = extractData(docTest, searchProduct);
             productsList.addAll(productsCurrentPage1);
 
             int nrOfPages = getNumberOfPages(docTest);
@@ -40,7 +41,7 @@ public class EmagScraper extends BaseScraper {
                             .timeout(30 * 1000)
                             .get();
 
-                    List<Product> productsCurrentPage = extractData(doc, searchProduct);
+                    List<ProductBase> productsCurrentPage = extractData(doc, searchProduct);
                     if (productsCurrentPage.isEmpty()) {
                         break;
                     }
@@ -51,37 +52,41 @@ public class EmagScraper extends BaseScraper {
             e.printStackTrace();
         }
 
-        System.out.println("[EMAG] Numarul de produse (in stoc): " + productsList.size());
+        System.out.println("[EMAG] Numarul de produse: " + productsList.size());
         return productsList;
     }
 
-    private List<Product> extractData(Document doc, String searchProduct) {
-        List<Product> products = new ArrayList<Product>();
+    private List<ProductBase> extractData(Document doc, String searchProduct) {
+        List<ProductBase> products = new ArrayList<>();
         Elements list = doc.select("div#card_grid div.card-item div.card div.card-section-wrapper");
 
         for (Element prod : list) {
             try {
-                String prodName = getProductName(prod);
-                float prodPrice = getProductPrice(prod);
                 int prodStock = getProductStock(prod);
+                String prodName = getProductName(prod);
+                double prodPrice = getProductPrice(prod);
                 String prodUrl = getProductUrl(prod);
                 String prodImg = getProductImg(prod);
+                String date = dateFormat.format(new Date());
 
-                if (prodStock == 1) {
-                    double similarityCoefficient = SearchSimilarity.getSimilarityBetweenSearchAndFoundName(searchProduct, prodName);
+                ProductHistory newProductHistory = ProductHistory.builder()
+                        .price(prodPrice)
+                        .date(date)
+                        .stock(prodStock)
+                        .build();
+                List<ProductHistory> productHistories = new ArrayList<ProductHistory>();
+                productHistories.add(newProductHistory);
 
-                    Product currentProduct = Product.builder()
-                            .name(prodName)
-                            .price(prodPrice)
-                            .stock(prodStock)
-                            .url(prodUrl)
-                            .source(ProductSourceType.EMAG)
-                            .img(prodImg)
-                            .similarity(similarityCoefficient)
-                            .build();
+                ProductBase newProduct = ProductBase.builder()
+                        .name(prodName)
+                        .source(ProductSourceType.EMAG)
+                        .url(prodUrl)
+                        .img(prodImg)
+                        .history(productHistories)
+                        .build();
 
-                    products.add(currentProduct);
-                }
+                products.add(newProduct);
+
             } catch (Exception e) {
                 System.out.println("Error Emag : " + e.getMessage());
             }

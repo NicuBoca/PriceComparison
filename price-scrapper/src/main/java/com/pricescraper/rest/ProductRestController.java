@@ -1,7 +1,7 @@
 package com.pricescraper.rest;
 
+import com.pricescraper.model.ProductBase;
 import com.pricescraper.repository.ProductRepository;
-import com.pricescraper.model.Product;
 import com.pricescraper.service.CrawlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,9 +20,8 @@ public class ProductRestController {
 
     @CrossOrigin(origins = "http://localhost:4200")
     @RequestMapping(method = RequestMethod.GET, value = "/api/product/{product}")
-    public ResponseEntity<List<Product>> getAllProducts(@PathVariable String product) {
-        crawlerService.crawl(product);
-        crawlerService.cluster();
-        return new ResponseEntity<>(productRepository.findAllByOrderBySimilarityDesc(), HttpStatus.OK);
+    public ResponseEntity<List<ProductBase>> getAllProducts(@PathVariable String product) {
+        crawlerService.productClustering(product);
+        return new ResponseEntity<>(productRepository.findAll(), HttpStatus.OK);
     }
 }
