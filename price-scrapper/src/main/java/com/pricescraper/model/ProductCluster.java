@@ -1,22 +1,20 @@
 package com.pricescraper.model;
 
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Getter
+@Data
 @ToString
-@Document(collection = "product_cluster")
 public class ProductCluster {
-    @Id
     private int cluster;
     private String name;
     private String img;
     private double priceMin;
-    private double similarity;
+    private double priceMax;
     private int nrProducts;
-    private ProductDTO[] products;
+    private List<Product> products;
 }

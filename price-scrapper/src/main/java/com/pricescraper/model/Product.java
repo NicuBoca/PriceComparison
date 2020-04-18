@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @ToString
 @Document(collection = "product")
-public class ProductBase {
+public class Product {
     @Id
     private String id;
     private String name;

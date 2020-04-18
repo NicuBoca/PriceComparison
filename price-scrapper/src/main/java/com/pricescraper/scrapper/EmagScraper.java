@@ -1,6 +1,6 @@
 package com.pricescraper.scrapper;
 
-import com.pricescraper.model.ProductBase;
+import com.pricescraper.model.Product;
 import com.pricescraper.model.ProductHistory;
 import com.pricescraper.types.ProductSourceType;
 import org.jsoup.Jsoup;
@@ -15,10 +15,10 @@ import java.util.List;
 public class EmagScraper extends BaseScraper {
 
     @Override
-    public List<ProductBase> scrap(String searchProduct) {
+    public List<Product> scrap(String searchProduct) {
 
         System.out.println("Emag searcing for product: " + searchProduct);
-        List<ProductBase> productsList = new ArrayList<ProductBase>();
+        List<Product> productsList = new ArrayList<Product>();
 
         try {
             String searchUrlTest = buildUrl(searchProduct, 1);
@@ -27,7 +27,7 @@ public class EmagScraper extends BaseScraper {
                     .timeout(30 * 1000)
                     .get();
 
-            List<ProductBase> productsCurrentPage1 = extractData(docTest, searchProduct);
+            List<Product> productsCurrentPage1 = extractData(docTest, searchProduct);
             productsList.addAll(productsCurrentPage1);
 
             int nrOfPages = getNumberOfPages(docTest);
@@ -41,7 +41,7 @@ public class EmagScraper extends BaseScraper {
                             .timeout(30 * 1000)
                             .get();
 
-                    List<ProductBase> productsCurrentPage = extractData(doc, searchProduct);
+                    List<Product> productsCurrentPage = extractData(doc, searchProduct);
                     if (productsCurrentPage.isEmpty()) {
                         break;
                     }
@@ -56,8 +56,8 @@ public class EmagScraper extends BaseScraper {
         return productsList;
     }
 
-    private List<ProductBase> extractData(Document doc, String searchProduct) {
-        List<ProductBase> products = new ArrayList<>();
+    private List<Product> extractData(Document doc, String searchProduct) {
+        List<Product> products = new ArrayList<>();
         Elements list = doc.select("div#card_grid div.card-item div.card div.card-section-wrapper");
 
         for (Element prod : list) {
@@ -77,7 +77,7 @@ public class EmagScraper extends BaseScraper {
                 List<ProductHistory> productHistories = new ArrayList<ProductHistory>();
                 productHistories.add(newProductHistory);
 
-                ProductBase newProduct = ProductBase.builder()
+                Product newProduct = Product.builder()
                         .name(prodName)
                         .source(ProductSourceType.EMAG)
                         .url(prodUrl)

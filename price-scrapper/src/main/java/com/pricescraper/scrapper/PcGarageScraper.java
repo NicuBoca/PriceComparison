@@ -1,7 +1,6 @@
 package com.pricescraper.scrapper;
 
-import com.pricescraper.model.ProductBase;
-import com.pricescraper.model.ProductDTO;
+import com.pricescraper.model.Product;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,10 +12,10 @@ import java.util.List;
 public class PcGarageScraper extends BaseScraper {
 
     @Override
-    public List<ProductBase> scrap(String searchProduct) {
+    public List<Product> scrap(String searchProduct) {
 
         System.out.println("PcGarage searcing for product: " + searchProduct);
-        List<ProductDTO> products = new ArrayList<ProductDTO>();
+        List<Product> products = new ArrayList<>();
 
         try {
             String searchUrl = buildUrl(searchProduct);

@@ -1,6 +1,6 @@
 package com.pricescraper.filter;
 
-import com.pricescraper.model.ProductBase;
+import com.pricescraper.model.Product;
 import org.apache.commons.text.similarity.JaccardSimilarity;
 
 import java.util.ArrayList;
@@ -9,18 +9,17 @@ import java.util.List;
 
 public class SimilarityFilter {
 
-    public static List<ProductBase> getTheMostSimilarProducts(List<ProductBase> products, String searchProduct) {
-        List<ProductBase> filteredProducts = new ArrayList<ProductBase>();
+    public static List<Product> getTheMostSimilarProducts(List<Product> products, String searchProduct) {
+        List<Product> filteredProducts = new ArrayList<Product>();
         String[] arrOfSearchName = searchProduct.split(" ");
         int arrSearchNameLength = arrOfSearchName.length;
         double[] similarityRate = new double[arrSearchNameLength];
         String[] similarString = new String[arrSearchNameLength];
         int prodListLength = products.size();
         double[] avgSimilarity = new double[prodListLength];
-        String suggestion = "";
 
         int counter = 0;
-        for (ProductBase product : products) {
+        for (Product product : products) {
             avgSimilarity[counter] = getAvgSearchNameMatching(product.getName(), arrOfSearchName, similarityRate, similarString);
             counter++;
         }

@@ -1,6 +1,6 @@
 package com.pricescraper.scrapper;
 
-import com.pricescraper.model.ProductBase;
+import com.pricescraper.model.Product;
 import com.pricescraper.model.ProductHistory;
 import com.pricescraper.types.ProductSourceType;
 import org.json.JSONArray;
@@ -18,10 +18,10 @@ import java.util.List;
 public class AltexScraper extends BaseScraper {
 
     @Override
-    public List<ProductBase> scrap(String searchProduct) {
+    public List<Product> scrap(String searchProduct) {
 
         System.out.println("Altex searcing for product: " + searchProduct);
-        List<ProductBase> productsList = new ArrayList<ProductBase>();
+        List<Product> productsList = new ArrayList<Product>();
         boolean prodExists = true;
         int pageCounter = 1;
 
@@ -37,7 +37,7 @@ public class AltexScraper extends BaseScraper {
                 //System.out.println("response code: " + responseCode);
 
                 if (responseCode == 200) {
-                    List<ProductBase> productsCurrentPage = extractData(con, searchProduct);
+                    List<Product> productsCurrentPage = extractData(con, searchProduct);
                     if (productsCurrentPage.isEmpty()) {
                         prodExists = false;
                     }
@@ -58,8 +58,8 @@ public class AltexScraper extends BaseScraper {
         return productsList;
     }
 
-    private List<ProductBase> extractData(HttpURLConnection con, String searchProduct) throws IOException {
-        List<ProductBase> products = new ArrayList<ProductBase>();
+    private List<Product> extractData(HttpURLConnection con, String searchProduct) throws IOException {
+        List<Product> products = new ArrayList<Product>();
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
         StringBuffer response = new StringBuffer();
@@ -90,7 +90,7 @@ public class AltexScraper extends BaseScraper {
 			List<ProductHistory> productHistories = new ArrayList<ProductHistory>();
 			productHistories.add(newProductHistory);
 
-			ProductBase newProduct = ProductBase.builder()
+			Product newProduct = Product.builder()
 					.name(prodName)
 					.source(ProductSourceType.ALTEX)
 					.url(prodUrl)

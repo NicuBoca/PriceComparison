@@ -1,7 +1,6 @@
 package com.pricescraper.scrapper;
 
-import com.pricescraper.model.ProductBase;
-import com.pricescraper.model.ProductDTO;
+import com.pricescraper.model.Product;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -11,10 +10,10 @@ public abstract class BaseScraper {
 
     protected static final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-    public abstract List<ProductBase> scrap(String seachProduct);
+    public abstract List<Product> scrap(String seachProduct);
 
-    public List<ProductBase> getProducts(String searchProduct) {
-        List<ProductBase> products = scrap(searchProduct);
+    public List<Product> getProducts(String searchProduct) {
+        List<Product> products = scrap(searchProduct);
         return products;
     }
 

@@ -1,6 +1,6 @@
 package com.pricescraper.filter;
 
-import com.pricescraper.model.ProductBase;
+import com.pricescraper.model.Product;
 import org.apache.commons.text.similarity.JaccardSimilarity;
 
 import java.io.File;
@@ -15,7 +15,7 @@ public class ProductMatching {
     private static final List<String> specialChars = Arrays.asList(",", "-", "\"", "'", "!", "(", ")", "{", "}", "[", "]", "^",
             "~", "*", "?", ":", "\\(o\\)", "\u00B0", "\\(C\\)", "\u00a9", "\\(R\\)", "\u00AE", "\\(TM\\)", "\u2122");
 
-    public static double isSameProductByName(ProductBase p1, ProductBase p2) {
+    public static double getSimilarityForProductMatching(Product p1, Product p2) {
         setStopwordsAndExceptions();
         double precision = 0.8;
 
@@ -39,19 +39,14 @@ public class ProductMatching {
 //        String name2 = "Uscator de par Remington AC9096, 2400 W, 3 Trepte temperatura, 2 Viteze, Turbo, Difuzor volum, Concentrator, Rosu";
 //        String name2 = "Uscator de par REMINGTON Silk AC9096, 2400W, 6 viteze, 6 trepte temperatura, rosu-negru";
 
-        ProductBase prodObj1, prodObj2;
         String prodName1, prodName2;
 
         if (p1.getName().length() < p2.getName().length()) {
             prodName1 = p1.getName().toLowerCase();
-            prodObj1 = p1;
             prodName2 = p2.getName().toLowerCase();
-            prodObj2 = p2;
         } else {
             prodName1 = p2.getName().toLowerCase();
-            prodObj1 = p2;
             prodName2 = p1.getName().toLowerCase();
-            prodObj2 = p1;
         }
 
         // daca numele produsului nu contine detalii tehnice (beta)
@@ -93,15 +88,15 @@ public class ProductMatching {
 //        System.out.println(r2);
 
         if (r2 >= precision) {
-//                System.out.println("Match");
+//            System.out.println("Match");
             return r2;
         } else {
-            return isSameProductByDifferentWords(precision, setProd1, setProd2, nrCommon, nrTotalRef);
+            return getSimilarityByDifferentWords(precision, setProd1, setProd2, nrCommon, nrTotalRef);
         }
 
     }
 
-    private static double isSameProductByDifferentWords(double precision, Set<String> setProd1, Set<String> setProd2, double nrCommon, double nrTotalRef) {
+    private static double getSimilarityByDifferentWords(double precision, Set<String> setProd1, Set<String> setProd2, double nrCommon, double nrTotalRef) {
         Set<String> differentWords = new HashSet<String>(setProd1);
         for (String element : setProd2) {
             if (!differentWords.add(element)) {
