@@ -22,8 +22,21 @@ public class ClusterServiceImpl implements ClusterService {
     private ProductDao productDao;
 
     @Override
-    public List<ProductCluster> productClustering(List<Product> productList) {
+    public List<ProductCluster> getProductClusterList(List<Product> productList) {
+        int nrClusters = clustering(productList);
 
+        for (Product product : productList) {
+            productDao.insertProductAndUpdateHistory(product);
+        }
+
+        List<ProductCluster> productClusterList = getProductClusters(productList, nrClusters);
+
+        System.out.println("Cluster finish!");
+
+        return productClusterList;
+    }
+
+    private int clustering(List<Product> productList) {
         /**
          * List1<List2<Pair<Integer, Double>>>
          *      List1 = lista de clustere
@@ -108,16 +121,15 @@ public class ClusterServiceImpl implements ClusterService {
                     .setCluster(clusterCount);
             clusterCount++;
         }
+        return clusterCount;
+    }
 
-        for (Product product : productList) {
-            productDao.insertProductAndUpdateHistory(product);
-        }
-
+    private List<ProductCluster> getProductClusters(List<Product> productList, int nrClusters) {
         List<Product> productListAfterMerge = productDao.findProductsByNameAndSource(productList);
         List<ProductCluster> productClusterList = new ArrayList<>();
-
         boolean isSet;
-        for (int k = 1; k < clusterCount; k++) {
+
+        for (int k = 1; k < nrClusters; k++) {
             ProductCluster productCluster = new ProductCluster();
             List<Product> productsFromCluster = new ArrayList<>();
             productCluster.setCluster(k);
@@ -132,17 +144,18 @@ public class ClusterServiceImpl implements ClusterService {
                     productsFromCluster.add(product);
                 }
             }
-            productCluster.setNrProducts(productsFromCluster.size());
-            productCluster.setProducts(productsFromCluster);
-            Product prodMax =  Collections.max(productsFromCluster, Comparator.comparing(p -> p.getHistory().get(p.getHistory().size() - 1).getPrice()));
-            Product prodMin =  Collections.min(productsFromCluster, Comparator.comparing(p -> p.getHistory().get(p.getHistory().size() - 1).getPrice()));
+
+            Product prodMax = Collections.max(productsFromCluster, Comparator.comparing(p -> p.getHistory().get(p.getHistory().size() - 1).getPrice()));
+            Product prodMin = Collections.min(productsFromCluster, Comparator.comparing(p -> p.getHistory().get(p.getHistory().size() - 1).getPrice()));
+
             productCluster.setPriceMax(prodMax.getHistory().get(prodMax.getHistory().size() - 1).getPrice());
             productCluster.setPriceMin(prodMin.getHistory().get(prodMin.getHistory().size() - 1).getPrice());
+
+            productCluster.setNrProducts(productsFromCluster.size());
+            productCluster.setProducts(productsFromCluster);
+
             productClusterList.add(productCluster);
         }
-
-        System.out.println("Cluster finish!");
-
         return productClusterList;
     }
 

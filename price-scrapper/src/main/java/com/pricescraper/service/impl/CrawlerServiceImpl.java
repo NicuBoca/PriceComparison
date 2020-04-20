@@ -16,7 +16,7 @@ import java.util.List;
 public class CrawlerServiceImpl implements CrawlerService {
 
     @Override
-    public List<Product> crawl(String searchProduct) {
+    public List<Product> getProductList(String searchProduct) {
         List<BaseScraper> crawlJobs = initCrawler();
         List<Product> productList = new ArrayList<>();
         for (BaseScraper scrapper : crawlJobs) {

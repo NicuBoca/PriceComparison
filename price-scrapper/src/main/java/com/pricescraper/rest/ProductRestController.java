@@ -26,8 +26,8 @@ public class ProductRestController {
     @CrossOrigin(origins = "http://localhost:4200")
     @RequestMapping(method = RequestMethod.GET, value = "/api/product/{product}")
     public ResponseEntity<List<ProductCluster>> getProducts(@PathVariable String product) {
-        List<Product> productList = crawlerService.crawl(product);
-        List<ProductCluster> productClusterList = clusterService.productClustering(productList);
+        List<Product> productList = crawlerService.getProductList(product);
+        List<ProductCluster> productClusterList = clusterService.getProductClusterList(productList);
         return new ResponseEntity<>(productClusterList, HttpStatus.OK);
     }
 }
