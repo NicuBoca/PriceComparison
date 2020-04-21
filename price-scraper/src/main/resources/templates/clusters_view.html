@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Clusters</title>
+</head>
+<body>
+<div th:each="cluster : ${clusters}">
+    <ul>
+        <li><span th:text="${cluster.name}">Name</span></li>
+        <li><span th:text="${cluster.priceMin}">Price min</span></li>
+        <li><span th:text="${cluster.priceMax}">Price max</span></li>
+        <li><span th:text="${cluster.nrProducts}">Nr. products</span></li>
+    </ul>
+<!--    <form th:action="@{/clusters/products}" th:object="${productList}" method="post">-->
+<!--        <input type="hidden" th:field="${products}" th:value="${cluster.products}"/>-->
+<!--        <button type="submit">Details</button>-->
+<!--    </form>-->
+        <br/>
+        Detalii:
+        <div th:each="product : ${cluster.products}">
+            <ul>
+                <li><span th:text="${product.name}">Name</span></li>
+                <li><span th:text="${product.source}">Source</span></li>
+            </ul>
+        </div>
+    <hr>
+</div>
+</body>
+</html>

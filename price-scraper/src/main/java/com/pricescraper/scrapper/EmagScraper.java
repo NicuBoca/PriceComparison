@@ -3,11 +3,13 @@ package com.pricescraper.scrapper;
 import com.pricescraper.model.Product;
 import com.pricescraper.model.ProductHistory;
 import com.pricescraper.types.ProductSourceType;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,17 +17,34 @@ import java.util.List;
 public class EmagScraper extends BaseScraper {
 
     @Override
-    public List<Product> scrap(String searchProduct) {
+    public List<Product> scrap(String searchProduct) throws IOException {
+
+        Connection.Response response = null;
+        int statusCode;
 
         System.out.println("Emag searcing for product: " + searchProduct);
         List<Product> productsList = new ArrayList<Product>();
 
+        String searchUrlTest = buildUrl(searchProduct, 1);
+        System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
+
         try {
-            String searchUrlTest = buildUrl(searchProduct, 1);
-            System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
-            Document docTest = Jsoup.connect(searchUrlTest)
-                    .timeout(30 * 1000)
-                    .get();
+            response = Jsoup.connect(searchUrlTest)
+                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36")
+                    .timeout(10000)
+                    .execute();
+        } catch (IOException e) {
+            System.out.println("EMAG: " + e);
+        }
+
+        assert response != null;
+        statusCode = response.statusCode();
+
+        if (statusCode != 200) {
+            System.out.println("Eroare conexiune Emag!");
+            return null;
+        } else {
+            Document docTest = response.parse();
 
             List<Product> productsCurrentPage1 = extractData(docTest, searchProduct);
             productsList.addAll(productsCurrentPage1);
@@ -48,12 +67,9 @@ public class EmagScraper extends BaseScraper {
                     productsList.addAll(productsCurrentPage);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("[EMAG] Numarul de produse: " + productsList.size());
+            return productsList;
         }
-
-        System.out.println("[EMAG] Numarul de produse: " + productsList.size());
-        return productsList;
     }
 
     private List<Product> extractData(Document doc, String searchProduct) {

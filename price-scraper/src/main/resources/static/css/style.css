@@ -1,10 +1,19 @@
-html,
 body {
-    height: 100%;
+    background-color: #f0f0f0;
 }
 
-body {
-    margin: 0;
-    font-family: Roboto, "Helvetica Neue", sans-serif;
-    background-color: #1784c7;
+.search-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+}
+
+#spinner {
+    margin-left: 50%;
+    visibility: hidden;
 }

@@ -3,15 +3,17 @@ package com.pricescraper.controller;
 import com.pricescraper.dao.ProductDao;
 import com.pricescraper.model.Product;
 import com.pricescraper.model.ProductCluster;
+import com.pricescraper.model.ProductList;
 import com.pricescraper.service.ClusterService;
 import com.pricescraper.service.CrawlerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -25,19 +27,26 @@ public class ProductController {
     @Autowired
     private ClusterService clusterService;
 
-    @CrossOrigin(origins = "http://localhost:4200")
-    @RequestMapping(method = RequestMethod.GET, value = "/api/product/{product}")
-    public ResponseEntity<List<ProductCluster>> getProducts(@PathVariable String product) {
+    @RequestMapping(method = RequestMethod.GET, value = "/clusters")
+    public String getClusters(@RequestParam String product, Model model) throws IOException {
         List<Product> productList = crawlerService.getProductList(product);
         List<ProductCluster> productClusterList = clusterService.getProductClusterList(productList);
-        return new ResponseEntity<>(productClusterList, HttpStatus.OK);
+        model.addAttribute("clusters", productClusterList);
+        return "clusters_view";
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/search")
-    public String getProducts(@RequestParam String product, Model model) {
-        List<Product> productList = crawlerService.getProductList(product);
-        List<ProductCluster> productClusterList = clusterService.getProductClusterList(productList);
-        model.addAttribute("productsCluster", productClusterList);
-        return "products_cluster";
+    @RequestMapping(method = RequestMethod.POST, value = "/clusters/products")
+//    public String getProducts(@ModelAttribute("productList") ProductList productList, BindingResult result, Model model) {
+    public String getProducts(@ModelAttribute("productList") ProductList productList, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return "error";
+        }
+        model.addAttribute("products", productList.getProducts());
+        return "products_view";
+    }
+
+    @RequestMapping(value = "product/{prodId}", method = RequestMethod.GET)
+    public ModelAndView showProductCluster(@PathVariable("prodId") String prodId) {
+        return null;
     }
 }

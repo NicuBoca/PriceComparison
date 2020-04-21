@@ -9,6 +9,7 @@ import com.pricescraper.scrapper.MediaGalaxyScraper;
 import com.pricescraper.service.CrawlerService;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ import java.util.List;
 public class CrawlerServiceImpl implements CrawlerService {
 
     @Override
-    public List<Product> getProductList(String searchProduct) {
+    public List<Product> getProductList(String searchProduct) throws IOException {
         List<BaseScraper> crawlJobs = initCrawler();
         List<Product> productList = new ArrayList<>();
         for (BaseScraper scrapper : crawlJobs) {

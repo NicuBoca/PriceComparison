@@ -4,6 +4,7 @@ import com.pricescraper.dao.ProductDao;
 import com.pricescraper.filter.ProductMatching;
 import com.pricescraper.model.Product;
 import com.pricescraper.model.ProductCluster;
+import com.pricescraper.model.ProductList;
 import com.pricescraper.service.ClusterService;
 import com.pricescraper.types.ProductSourceType;
 import org.apache.commons.lang3.tuple.ImmutablePair;
