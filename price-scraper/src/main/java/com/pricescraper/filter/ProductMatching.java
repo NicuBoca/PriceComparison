@@ -152,11 +152,11 @@ public class ProductMatching {
         Set<String> myExceptions = new HashSet<>();
         Set<String> myStopwords = new HashSet<>();
         try {
-            Scanner scanner = new Scanner(new File("src/main/resources/filter/exceptions.txt"));
+            Scanner scanner = new Scanner(new File("src/main/java/com/pricescraper/filter/files/exceptions.txt"));
             while (scanner.hasNextLine()) {
                 myExceptions.add(scanner.next());
             }
-            scanner = new Scanner(new File("src/main/resources/filter/stopwords.txt"));
+            scanner = new Scanner(new File("src/main/java/com/pricescraper/filter/files/stopwords.txt"));
             while (scanner.hasNextLine()) {
                 myStopwords.add(scanner.next());
             }
