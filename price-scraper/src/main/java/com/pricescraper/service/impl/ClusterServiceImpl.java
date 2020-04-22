@@ -4,9 +4,9 @@ import com.pricescraper.dao.ProductDao;
 import com.pricescraper.filter.ProductMatching;
 import com.pricescraper.model.Product;
 import com.pricescraper.model.ProductCluster;
-import com.pricescraper.model.ProductList;
 import com.pricescraper.service.ClusterService;
 import com.pricescraper.types.ProductSourceType;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,25 +16,39 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+@NoArgsConstructor
 @Component
 public class ClusterServiceImpl implements ClusterService {
 
     @Autowired
     private ProductDao productDao;
 
+    private List<ProductCluster> productClusterList;
+
     @Override
-    public List<ProductCluster> getProductClusterList(List<Product> productList) {
+    public void computeProductClusterList(List<Product> productList) {
         int nrClusters = clustering(productList);
 
         for (Product product : productList) {
             productDao.insertProductAndUpdateHistory(product);
         }
-
-        List<ProductCluster> productClusterList = getProductClusters(productList, nrClusters);
-
+        productClusterList = getProductClusters(productList, nrClusters);
         System.out.println("Cluster finish!");
+    }
 
+    @Override
+    public List<ProductCluster> getProductClusterList() {
         return productClusterList;
+    }
+
+    @Override
+    public ProductCluster getProductClusterById(int id) {
+        for(ProductCluster cluster : productClusterList) {
+            if(cluster.getId() == id) {
+                return cluster;
+            }
+        }
+        return null;
     }
 
     private int clustering(List<Product> productList) {
@@ -133,7 +147,7 @@ public class ClusterServiceImpl implements ClusterService {
         for (int k = 1; k < nrClusters; k++) {
             ProductCluster productCluster = new ProductCluster();
             List<Product> productsFromCluster = new ArrayList<>();
-            productCluster.setCluster(k);
+            productCluster.setId(k);
             isSet = false;
             for (Product product : productListAfterMerge) {
                 if (product.getHistory().get(product.getHistory().size() - 1).getCluster() == k) {

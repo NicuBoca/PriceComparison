@@ -12,18 +12,23 @@
         <li><span th:text="${cluster.priceMax}">Price max</span></li>
         <li><span th:text="${cluster.nrProducts}">Nr. products</span></li>
     </ul>
-<!--    <form th:action="@{/clusters/products}" th:object="${productList}" method="post">-->
-<!--        <input type="hidden" th:field="${products}" th:value="${cluster.products}"/>-->
-<!--        <button type="submit">Details</button>-->
-<!--    </form>-->
-        <br/>
-        Detalii:
-        <div th:each="product : ${cluster.products}">
-            <ul>
-                <li><span th:text="${product.name}">Name</span></li>
-                <li><span th:text="${product.source}">Source</span></li>
-            </ul>
-        </div>
+
+    <form th:action="@{'/clusters/products/' + ${cluster.id}}" method="get">
+        <button type="submit">Details</button>
+    </form>
+
+<!--    <a th:href="@{'/clusters/products/' + ${cluster.id}}">-->
+<!--        <span>Details</span>-->
+<!--    </a>-->
+
+    <br/>
+    <!--    Detalii:-->
+    <!--    <div th:each="product : ${cluster.products}">-->
+    <!--        <ul>-->
+    <!--            <li><span th:text="${product.name}">Name</span></li>-->
+    <!--            <li><span th:text="${product.source}">Source</span></li>-->
+    <!--        </ul>-->
+    <!--    </div>-->
     <hr>
 </div>
 </body>

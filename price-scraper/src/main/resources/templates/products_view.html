@@ -5,12 +5,18 @@
     <title>Products</title>
 </head>
 <body>
-<div th:each="product : ${products}">
+<ul>
+    <li><span th:text="${cluster.name}">Name</span></li>
+    <li><span th:text="${cluster.priceMin}">Price min</span></li>
+    <li><span th:text="${cluster.priceMax}">Price max</span></li>
+    <li><span th:text="${cluster.nrProducts}">Nr. products</span></li>
+</ul>
+<div th:each="product : ${cluster.products}">
     <ul>
-        <li><span th:text="${product.name}">Name</span>></li>
+        <li><span th:text="${product.name}">Name</span></li>
         <li><span th:text="${product.source}">Source</span></li>
     </ul>
-    <br/>
 </div>
+
 </body>
 </html>

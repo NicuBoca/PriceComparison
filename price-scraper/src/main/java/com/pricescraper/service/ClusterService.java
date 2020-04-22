@@ -6,5 +6,9 @@ import com.pricescraper.model.ProductCluster;
 import java.util.List;
 
 public interface ClusterService {
-    List<ProductCluster> getProductClusterList(List<Product> productList);
+    void computeProductClusterList(List<Product> productList);
+
+    List<ProductCluster> getProductClusterList();
+
+    ProductCluster getProductClusterById(int id);
 }

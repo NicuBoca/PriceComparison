@@ -2,15 +2,17 @@ package com.pricescraper.model;
 
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
 @ToString
+@Getter
+@Setter
 public class ProductCluster {
-    private int cluster;
+    private int id;
     private String name;
     private String img;
     private double priceMin;
