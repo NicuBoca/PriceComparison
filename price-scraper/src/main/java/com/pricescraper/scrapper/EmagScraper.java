@@ -42,11 +42,11 @@ public class EmagScraper extends BaseScraper {
 
         if (statusCode != 200) {
             System.out.println("Eroare conexiune Emag!");
-            return null;
+            return productsList;
         } else {
             Document docTest = response.parse();
 
-            List<Product> productsCurrentPage1 = extractData(docTest, searchProduct);
+            List<Product> productsCurrentPage1 = extractData(docTest);
             productsList.addAll(productsCurrentPage1);
 
             int nrOfPages = getNumberOfPages(docTest);
@@ -60,7 +60,7 @@ public class EmagScraper extends BaseScraper {
                             .timeout(30 * 1000)
                             .get();
 
-                    List<Product> productsCurrentPage = extractData(doc, searchProduct);
+                    List<Product> productsCurrentPage = extractData(doc);
                     if (productsCurrentPage.isEmpty()) {
                         break;
                     }
@@ -72,7 +72,7 @@ public class EmagScraper extends BaseScraper {
         }
     }
 
-    private List<Product> extractData(Document doc, String searchProduct) {
+    private List<Product> extractData(Document doc) {
         List<Product> products = new ArrayList<>();
         Elements list = doc.select("div#card_grid div.card-item div.card div.card-section-wrapper");
 
@@ -123,7 +123,7 @@ public class EmagScraper extends BaseScraper {
         Elements pageList = doc.select("div.listing-panel-footer div.row ul#listing-paginator li");
         for (Element page : pageList) {
             String data = page.select("a").attr("data-page");
-            if (data != "") {
+            if (!data.equals("")) {
                 int currentNr = Integer.parseInt(data);
                 if (currentNr > nrOfPages) {
                     nrOfPages = currentNr;

@@ -9,7 +9,7 @@ import java.util.List;
 
 public abstract class BaseScraper {
 
-    protected static final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    protected static final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
     public abstract List<Product> scrap(String seachProduct) throws IOException;
 

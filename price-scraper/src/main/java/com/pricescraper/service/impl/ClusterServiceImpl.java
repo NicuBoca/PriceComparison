@@ -7,6 +7,7 @@ import com.pricescraper.model.ProductCluster;
 import com.pricescraper.service.ClusterService;
 import com.pricescraper.types.ProductSourceType;
 import lombok.NoArgsConstructor;
+import lombok.extern.java.Log;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @NoArgsConstructor
 @Component
+@Log
 public class ClusterServiceImpl implements ClusterService {
 
     @Autowired
@@ -33,7 +35,7 @@ public class ClusterServiceImpl implements ClusterService {
             productDao.insertProductAndUpdateHistory(product);
         }
         productClusterList = getProductClusters(productList, nrClusters);
-        System.out.println("Cluster finish!");
+        log.info("Cluster finished!");
     }
 
     @Override
@@ -160,16 +162,18 @@ public class ClusterServiceImpl implements ClusterService {
                 }
             }
 
-            Product prodMax = Collections.max(productsFromCluster, Comparator.comparing(p -> p.getHistory().get(p.getHistory().size() - 1).getPrice()));
-            Product prodMin = Collections.min(productsFromCluster, Comparator.comparing(p -> p.getHistory().get(p.getHistory().size() - 1).getPrice()));
+            if(productsFromCluster.size() != 0) {
+                Product prodMax = Collections.max(productsFromCluster, Comparator.comparing(p -> p.getHistory().get(p.getHistory().size() - 1).getPrice()));
+                Product prodMin = Collections.min(productsFromCluster, Comparator.comparing(p -> p.getHistory().get(p.getHistory().size() - 1).getPrice()));
 
-            productCluster.setPriceMax(prodMax.getHistory().get(prodMax.getHistory().size() - 1).getPrice());
-            productCluster.setPriceMin(prodMin.getHistory().get(prodMin.getHistory().size() - 1).getPrice());
+                productCluster.setPriceMax(prodMax.getHistory().get(prodMax.getHistory().size() - 1).getPrice());
+                productCluster.setPriceMin(prodMin.getHistory().get(prodMin.getHistory().size() - 1).getPrice());
 
-            productCluster.setNrProducts(productsFromCluster.size());
-            productCluster.setProducts(productsFromCluster);
+                productCluster.setNrProducts(productsFromCluster.size());
+                productCluster.setProducts(productsFromCluster);
 
-            productClusterList.add(productCluster);
+                productClusterList.add(productCluster);
+            }
         }
         return productClusterList;
     }

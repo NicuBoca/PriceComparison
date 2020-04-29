@@ -1,12 +1,15 @@
 package com.pricescraper.scrapper;
 
 import com.pricescraper.model.Product;
+import com.pricescraper.model.ProductHistory;
+import com.pricescraper.types.ProductSourceType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class PcGarageScraper extends BaseScraper {
@@ -15,7 +18,9 @@ public class PcGarageScraper extends BaseScraper {
     public List<Product> scrap(String searchProduct) {
 
         System.out.println("PcGarage searcing for product: " + searchProduct);
-        List<Product> products = new ArrayList<>();
+        List<Product> productsList = new ArrayList<>();
+
+        // de extras numarul de pagini
 
         try {
             String searchUrl = buildUrl(searchProduct);
@@ -24,41 +29,54 @@ public class PcGarageScraper extends BaseScraper {
                     .timeout(30 * 1000)
                     .get();
 
-            Elements list = doc.select("div#content-wrapper div#listing-right div.grid-products div.product-box-container");
-
-            for (Element prod : list) {
-                try {
-                    String prodName = getProductName(prod);
-                    float prodPrice = getProductPrice(prod);
-                    int prodStock = getProductStock(prod);
-                    String prodUrl = getProductUrl(prod);
-                    String prodImg = getProductImg(prod);
-
-                    if (prodStock == 1) {
-//                        double similarityCoefficient = SearchSimilarity.getSimilarityBetweenSearchAndFoundName(searchProduct, prodName);
-
-//                        ProductDTO currentProduct = ProductDTO.builder()
-//                                .name(prodName)
-//                                .price(prodPrice)
-//                                .stock(prodStock)
-//                                .url(prodUrl)
-//                                .source(ProductSourceType.PCGARAGE)
-//                                .img(prodImg)
-//                                .similarity(similarityCoefficient)
-//                                .build();
-
-//                        products.add(currentProduct);
-                    }
-
-                } catch (Exception e) {
-                    System.out.println("Error PcGarage : " + e.getMessage());
-                }
+            List<Product> productsCurrentPage = extractData(doc);
+            if (productsCurrentPage.isEmpty()) {
+                return null;
             }
+            productsList.addAll(productsCurrentPage);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return null;
+        return productsList;
+    }
+
+    private List<Product> extractData(Document doc) {
+        List<Product> products = new ArrayList<>();
+        Elements list = doc.select("div#content-wrapper div#listing-right div.grid-products div.product-box-container");
+
+        for (Element prod : list) {
+            try {
+                String prodName = getProductName(prod);
+                float prodPrice = getProductPrice(prod);
+                int prodStock = getProductStock(prod);
+                String prodUrl = getProductUrl(prod);
+                String prodImg = getProductImg(prod);
+                String date = dateFormat.format(new Date());
+
+                ProductHistory newProductHistory = ProductHistory.builder()
+                        .price(prodPrice)
+                        .date(date)
+                        .stock(prodStock)
+                        .build();
+                List<ProductHistory> productHistories = new ArrayList<ProductHistory>();
+                productHistories.add(newProductHistory);
+
+                Product newProduct = Product.builder()
+                        .name(prodName)
+                        .source(ProductSourceType.PCGARAGE)
+                        .url(prodUrl)
+                        .img(prodImg)
+                        .history(productHistories)
+                        .build();
+
+                products.add(newProduct);
+
+            } catch (Exception e) {
+                System.out.println("Error PcGarage : " + e.getMessage());
+            }
+        }
+        return products;
     }
 
     private String buildUrl(String searchProduct) {

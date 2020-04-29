@@ -7,6 +7,7 @@ import com.pricescraper.scrapper.BaseScraper;
 import com.pricescraper.scrapper.EmagScraper;
 import com.pricescraper.scrapper.MediaGalaxyScraper;
 import com.pricescraper.service.CrawlerService;
+import lombok.extern.java.Log;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Log
 public class CrawlerServiceImpl implements CrawlerService {
 
     @Override
@@ -24,7 +26,7 @@ public class CrawlerServiceImpl implements CrawlerService {
             productList.addAll(scrapper.getProducts(searchProduct));
         }
         List<Product> productListFiltered = SimilarityFilter.getTheMostSimilarProducts(productList, searchProduct);
-        System.out.println("Crawl finish!");
+        log.info("Crawl finished!");
         return productListFiltered;
     }
 

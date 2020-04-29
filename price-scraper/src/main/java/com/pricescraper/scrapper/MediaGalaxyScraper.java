@@ -77,7 +77,7 @@ public class MediaGalaxyScraper extends BaseScraper {
             int prodStock = prodItem.getInt("stock_status");
 
             String prodName = prodItem.getString("name");
-            double prodPrice = prodItem.getFloat("price");
+            double prodPrice = prodItem.getDouble("price");
             String prodUrl = getProductUrl(prodItem);
             String prodImg = getProductImg(prodItem);
             String date = dateFormat.format(new Date());
