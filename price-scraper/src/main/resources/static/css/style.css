@@ -13,10 +13,16 @@ body {
     -ms-transform: translate(-50%, -50%);
 }
 
+.img-card {
+    width: 200px;
+    margin: 10px;
+}
+
+.btn-details {
+    margin-top: 10px;
+}
+
 #spinner {
     margin-left: 50%;
     visibility: hidden;
-}
-#products-block {
-    display: none;
 }

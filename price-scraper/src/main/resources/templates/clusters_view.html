@@ -3,33 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <title>Clusters</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap/bootstrap.css}"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <script type="text/javascript" th:src="@{/js/scripts.js}"></script>
 </head>
 <body>
-<div th:each="cluster : ${clusters}">
-    <ul>
-        <li><span th:text="${cluster.name}">Name</span></li>
-        <li><span th:text="${cluster.priceMin}">Price min</span></li>
-        <li><span th:text="${cluster.priceMax}">Price max</span></li>
-        <li><span th:text="${cluster.nrProducts}">Nr. products</span></li>
-    </ul>
 
-    <form th:action="@{'/clusters/products/' + ${cluster.id}}" method="get">
-        <button type="submit">Details</button>
-    </form>
-
-<!--    <a th:href="@{'/clusters/products/' + ${cluster.id}}">-->
-<!--        <span>Details</span>-->
-<!--    </a>-->
-
+<th:block th:each="cluster : ${clusters}">
+    <div class="container">
+        <div class="card">
+            <div class="row justify-content-center">
+                <div class="col col-sm-12 col-md-4 text-center">
+                    <img class="img-card" th:src="${cluster.img}" alt="product image"/>
+                </div>
+                <div class="col col-sm-12 col-md-8">
+                    <div class="card-body">
+                        <div>
+                            <span th:text="${cluster.name}"></span>
+                        </div>
+                        <hr/>
+                        <div>
+                            <span class="font-weight-bold">Preț minim:</span>&nbsp;
+                            <span th:text="${cluster.priceMin}"></span>&nbsp;lei
+                        </div>
+                        <div>
+                            <span class="font-weight-bold">Preț maxim:</span>&nbsp;
+                            <span th:text="${cluster.priceMax}"></span>&nbsp;lei
+                        </div>
+                        <div>
+                            <span class="font-weight-bold">Număr oferte:</span>&nbsp;
+                            <span th:text="${cluster.nrProducts}"></span>
+                        </div>
+                        <form th:action="@{'/clusters/products/' + ${cluster.id}}" method="get">
+                            <button class="btn btn-primary btn-sm btn-details" type="submit">Vezi oferte</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <br/>
-    <!--    Detalii:-->
-    <!--    <div th:each="product : ${cluster.products}">-->
-    <!--        <ul>-->
-    <!--            <li><span th:text="${product.name}">Name</span></li>-->
-    <!--            <li><span th:text="${product.source}">Source</span></li>-->
-    <!--        </ul>-->
-    <!--    </div>-->
-    <hr>
-</div>
+</th:block>
+
 </body>
 </html>

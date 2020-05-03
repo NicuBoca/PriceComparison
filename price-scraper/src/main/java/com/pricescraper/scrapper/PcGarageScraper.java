@@ -48,7 +48,7 @@ public class PcGarageScraper extends BaseScraper {
         for (Element prod : list) {
             try {
                 String prodName = getProductName(prod);
-                float prodPrice = getProductPrice(prod);
+                double prodPrice = getProductPrice(prod);
                 int prodStock = getProductStock(prod);
                 String prodUrl = getProductUrl(prod);
                 String prodImg = getProductImg(prod);
@@ -92,13 +92,14 @@ public class PcGarageScraper extends BaseScraper {
         return prodName;
     }
 
-    private float getProductPrice(Element prod) {
+    private double getProductPrice(Element prod) {
         String prodPriceString = prod.select("div.product-box div.pb-price-container div.pb-price p.price").text();
         prodPriceString = prodPriceString.replace(prodPriceString.substring(prodPriceString.length() - 4), "");
         prodPriceString = prodPriceString.replace(".", "");
         prodPriceString = prodPriceString.replace(",", ".");
-        float prodPrice = Float.parseFloat(prodPriceString);
-        return prodPrice;
+        double prodPriceBeforeFormat = Double.parseDouble(prodPriceString);
+        String prodPriceAfterFormat = decimalFormat.format(prodPriceBeforeFormat);
+        return Double.parseDouble(prodPriceAfterFormat);
     }
 
     private int getProductStock(Element prod) {

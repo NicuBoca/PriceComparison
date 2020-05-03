@@ -137,7 +137,7 @@ public class EmagScraper extends BaseScraper {
         return prod.select("div.card-section-mid h2.card-body a.product-title").text();
     }
 
-    private float getProductPrice(Element prod) {
+    private double getProductPrice(Element prod) {
         String prodPriceString = prod.select("div.card-section-btm div.card-body p.product-new-price").text();
         String prodPriceSupString = prod.select("div.card-section-btm div.card-body p.product-new-price sup").text();
         prodPriceString = prodPriceString.replace(prodPriceString.substring(prodPriceString.length() - 6),
@@ -146,7 +146,9 @@ public class EmagScraper extends BaseScraper {
         prodPriceString = prodPriceString.replace("de la ", "");
         prodPriceString = prodPriceString.replace(".", "");
         prodPriceString = prodPriceString.replace(",", ".");
-        return Float.parseFloat(prodPriceString);
+        double prodPriceBeforeFormat = Double.parseDouble(prodPriceString);
+        String prodPriceAfterFormat = decimalFormat.format(prodPriceBeforeFormat);
+        return Double.parseDouble(prodPriceAfterFormat);
     }
 
     private int getProductStock(Element prod) {
