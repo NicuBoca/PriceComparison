@@ -31,7 +31,7 @@ public class EmagScraper extends BaseScraper {
         try {
             response = Jsoup.connect(searchUrlTest)
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36")
-                    .timeout(10000)
+                    .timeout(30 * 1000)
                     .execute();
         } catch (IOException e) {
             System.out.println("EMAG: " + e);
@@ -57,6 +57,7 @@ public class EmagScraper extends BaseScraper {
                     String searchUrl = buildUrl(searchProduct, i);
                     System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
                     Document doc = Jsoup.connect(searchUrl)
+                            .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36")
                             .timeout(30 * 1000)
                             .get();
 

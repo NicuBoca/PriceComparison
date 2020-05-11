@@ -16,8 +16,7 @@ public abstract class BaseScraper {
     public abstract List<Product> scrap(String seachProduct) throws IOException;
 
     public List<Product> getProducts(String searchProduct) throws IOException {
-        List<Product> products = scrap(searchProduct);
-        return products;
+        return scrap(searchProduct);
     }
 
 }

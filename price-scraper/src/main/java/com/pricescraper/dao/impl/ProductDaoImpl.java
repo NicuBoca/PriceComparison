@@ -22,14 +22,9 @@ public class ProductDaoImpl implements ProductDao {
     final String COLLECTION = "product";
 
     @Override
-    public List<Product> getAllProducts() {
-        return mongoTemplate.findAll(Product.class);
-    }
-
-    @Override
     public List<Product> findProductsByNameAndSource(List<Product> productList) {
         List<Product> result = new ArrayList<>();
-        for(Product product : productList) {
+        for (Product product : productList) {
             Query query = new Query();
             query.addCriteria(new Criteria().andOperator(
                     Criteria.where("name").is(product.getName()),
@@ -50,7 +45,7 @@ public class ProductDaoImpl implements ProductDao {
         Update update = new Update().addToSet("history", product.getHistory().get(0));
 
         UpdateResult updateResult = mongoTemplate.updateFirst(query, update, COLLECTION);
-        if(updateResult.getModifiedCount() == 0) {
+        if (updateResult.getModifiedCount() == 0) {
             mongoTemplate.insert(product);
         }
     }
