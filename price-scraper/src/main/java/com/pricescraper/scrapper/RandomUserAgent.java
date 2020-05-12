@@ -1,4 +1,4 @@
-package com.pricescraper.sandbox;
+package com.pricescraper.scrapper;
 
 import java.util.HashMap;
 import java.util.Map;

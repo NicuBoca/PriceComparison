@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface CrawlerService {
    List<Product> getProductList(String searchProduct) throws IOException;
+
+    void addProducts(List<Product> products);
 }

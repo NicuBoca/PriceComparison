@@ -2,7 +2,7 @@ package com.pricescraper.scrapper;
 
 import com.pricescraper.model.Product;
 import com.pricescraper.model.ProductHistory;
-import com.pricescraper.sandbox.RandomUserAgent;
+import com.pricescraper.service.CrawlerService;
 import com.pricescraper.types.ProductSourceType;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -17,6 +17,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class PcGarageScraper extends BaseScraper {
+
+    public PcGarageScraper(String product, CrawlerService engine) {
+        super(product, engine);
+    }
 
     @Override
     public List<Product> scrap(String searchProduct) throws IOException {
@@ -51,19 +55,20 @@ public class PcGarageScraper extends BaseScraper {
             List<Product> productsCurrentPage1 = extractData(docTest, searchProduct);
             productsList.addAll(productsCurrentPage1);
 
-//            int nrOfPages = getNumberOfPages(docTest);
-            int nrOfPages = 1;
+            int nrOfPages = getNumberOfPages(docTest);
             System.out.println("[PCGARAGE] Numarul de pagini (total): " + nrOfPages);
 
             if (nrOfPages > 1) {
                 for (int i = 2; i <= nrOfPages; i++) {
                     String searchUrl = buildUrl(searchProduct, i);
                     System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
+
                     try {
-                        TimeUnit.SECONDS.sleep(1);
-                    } catch (Exception e) {
-                        System.out.println(e);
+                        TimeUnit.SECONDS.sleep(2);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
+
                     Document doc = Jsoup.connect(searchUrl)
                             .userAgent(RandomUserAgent.getRandomUserAgent())
                             .timeout(300 * 1000)
@@ -134,7 +139,7 @@ public class PcGarageScraper extends BaseScraper {
     private String buildUrl(String searchProduct, int pageNumber) {
         String productUrlName = searchProduct.replaceAll("\\s+", "%2B");
         String baseUrl = "https://www.pcgarage.ro/cauta/";
-        String finalUrl = baseUrl + productUrlName + "/pagina"+pageNumber;
+        String finalUrl = baseUrl + productUrlName + "/pagina" + pageNumber;
         System.out.println(finalUrl);
         return finalUrl;
     }
@@ -142,11 +147,11 @@ public class PcGarageScraper extends BaseScraper {
     private int getNumberOfPages(Document doc) {
         int nrOfPages = 1;
         Elements lastPageElement = doc.select("div#container div.main-content div#listing-right div.lr-options div.lr-pagination ul li:last-child a");
-        if(lastPageElement != null) {
+        if (lastPageElement != null) {
             String lastPageUrl = lastPageElement.attr("href");
             StringBuilder lastPageNumber = new StringBuilder();
             for (int i = lastPageUrl.length() - 2; i >= 0; i--) {
-                if(lastPageUrl.charAt(i) >= '0' && lastPageUrl.charAt(i) <= '9') {
+                if (lastPageUrl.charAt(i) >= '0' && lastPageUrl.charAt(i) <= '9') {
                     lastPageNumber.append(lastPageUrl.charAt(i));
                 } else {
                     break;
@@ -155,7 +160,12 @@ public class PcGarageScraper extends BaseScraper {
             lastPageNumber = lastPageNumber.reverse();
             nrOfPages = Integer.parseInt(String.valueOf(lastPageNumber));
         }
-        return nrOfPages;
+        if (nrOfPages < 10) {
+            return nrOfPages;
+        } else {
+            return 10;
+        }
+
     }
 
     private String getProductName(Element prod) {

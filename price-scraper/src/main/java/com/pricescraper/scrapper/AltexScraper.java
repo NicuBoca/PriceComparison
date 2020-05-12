@@ -2,6 +2,7 @@ package com.pricescraper.scrapper;
 
 import com.pricescraper.model.Product;
 import com.pricescraper.model.ProductHistory;
+import com.pricescraper.service.CrawlerService;
 import com.pricescraper.types.ProductSourceType;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,6 +17,10 @@ import java.util.Date;
 import java.util.List;
 
 public class AltexScraper extends BaseScraper {
+
+    public AltexScraper(String product, CrawlerService engine) {
+        super(product, engine);
+    }
 
     @Override
     public List<Product> scrap(String searchProduct) {
@@ -82,21 +87,21 @@ public class AltexScraper extends BaseScraper {
             String prodImg = getProductImg(prodItem);
             String date = dateFormat.format(new Date());
 
-			ProductHistory newProductHistory = ProductHistory.builder()
-					.price(prodPrice)
-					.date(date)
-					.stock(prodStock)
-					.build();
-			List<ProductHistory> productHistories = new ArrayList<ProductHistory>();
-			productHistories.add(newProductHistory);
+            ProductHistory newProductHistory = ProductHistory.builder()
+                    .price(prodPrice)
+                    .date(date)
+                    .stock(prodStock)
+                    .build();
+            List<ProductHistory> productHistories = new ArrayList<ProductHistory>();
+            productHistories.add(newProductHistory);
 
-			Product newProduct = Product.builder()
-					.name(prodName)
-					.source(ProductSourceType.ALTEX)
-					.url(prodUrl)
-					.img(prodImg)
-					.history(productHistories)
-					.build();
+            Product newProduct = Product.builder()
+                    .name(prodName)
+                    .source(ProductSourceType.ALTEX)
+                    .url(prodUrl)
+                    .img(prodImg)
+                    .history(productHistories)
+                    .build();
 
             products.add(newProduct);
         }

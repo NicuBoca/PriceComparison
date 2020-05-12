@@ -2,6 +2,7 @@ package com.pricescraper.scrapper;
 
 import com.pricescraper.model.Product;
 import com.pricescraper.model.ProductHistory;
+import com.pricescraper.service.CrawlerService;
 import com.pricescraper.types.ProductSourceType;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,6 +17,10 @@ import java.util.Date;
 import java.util.List;
 
 public class MediaGalaxyScraper extends BaseScraper {
+
+    public MediaGalaxyScraper(String product, CrawlerService engine) {
+        super(product, engine);
+    }
 
     @Override
     public List<Product> scrap(String searchProduct) {

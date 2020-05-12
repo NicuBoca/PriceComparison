@@ -2,6 +2,7 @@ package com.pricescraper.scrapper;
 
 import com.pricescraper.model.Product;
 import com.pricescraper.model.ProductHistory;
+import com.pricescraper.service.CrawlerService;
 import com.pricescraper.types.ProductSourceType;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -13,8 +14,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class EmagScraper extends BaseScraper {
+
+    public EmagScraper(String product, CrawlerService engine) {
+        super(product, engine);
+    }
 
     @Override
     public List<Product> scrap(String searchProduct) throws IOException {
@@ -56,8 +62,15 @@ public class EmagScraper extends BaseScraper {
                 for (int i = 2; i <= nrOfPages; i++) {
                     String searchUrl = buildUrl(searchProduct, i);
                     System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
+
+                    try {
+                        TimeUnit.SECONDS.sleep(2);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
                     Document doc = Jsoup.connect(searchUrl)
-                            .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.113 Safari/537.36")
+                            .userAgent(RandomUserAgent.getRandomUserAgent())
                             .timeout(30 * 1000)
                             .get();
 
@@ -120,7 +133,7 @@ public class EmagScraper extends BaseScraper {
     }
 
     private int getNumberOfPages(Document doc) {
-        int nrOfPages = 0;
+        int nrOfPages = 1;
         Elements pageList = doc.select("div.listing-panel-footer div.row ul#listing-paginator li");
         for (Element page : pageList) {
             String data = page.select("a").attr("data-page");
@@ -131,7 +144,11 @@ public class EmagScraper extends BaseScraper {
                 }
             }
         }
-        return nrOfPages;
+        if (nrOfPages < 10) {
+            return nrOfPages;
+        } else {
+            return 10;
+        }
     }
 
     private String getProductName(Element prod) {
