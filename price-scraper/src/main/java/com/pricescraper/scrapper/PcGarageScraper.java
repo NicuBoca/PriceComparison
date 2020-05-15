@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class PcGarageScraper extends BaseScraper {
@@ -25,6 +26,7 @@ public class PcGarageScraper extends BaseScraper {
     @Override
     public List<Product> scrap(String searchProduct) throws IOException {
 
+        Random rand = new Random();
         Connection.Response response = null;
         int statusCode;
 
@@ -63,8 +65,9 @@ public class PcGarageScraper extends BaseScraper {
                     String searchUrl = buildUrl(searchProduct, i);
                     System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
 
+                    int rand_time = rand.nextInt(5) + 2;
                     try {
-                        TimeUnit.SECONDS.sleep(2);
+                        TimeUnit.SECONDS.sleep(rand_time);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -93,7 +96,7 @@ public class PcGarageScraper extends BaseScraper {
         String fullCategory = doc.select("div#container div.main-content nav.breadcrumbs").text();
         String category = fullCategory.substring(fullCategory.lastIndexOf("»") + 2);
         boolean categoryIsOk = false;
-        if (!category.equals("") && !category.equals(searchProduct)) {
+        if (!category.equals("") && !category.toLowerCase().equals(searchProduct)) {
             categoryIsOk = true;
         }
 

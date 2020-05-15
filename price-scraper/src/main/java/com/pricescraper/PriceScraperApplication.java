@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class PriceScraperApplication {
 
     public static void main(String[] args) {
+
         SpringApplication.run(PriceScraperApplication.class, args);
+
     }
 
 }

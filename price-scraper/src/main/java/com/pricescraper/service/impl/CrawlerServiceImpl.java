@@ -7,7 +7,6 @@ import com.pricescraper.service.CrawlerService;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -46,7 +45,7 @@ public class CrawlerServiceImpl implements CrawlerService {
     private List<BaseScraper> initCrawler(String product) {
         List<BaseScraper> crawlJobs = new ArrayList<BaseScraper>();
         crawlJobs.add(new EmagScraper(product, this));
-//        crawlJobs.add(new PcGarageScraper(product, this));
+        crawlJobs.add(new PcGarageScraper(product, this));
         crawlJobs.add(new AltexScraper(product, this));
         crawlJobs.add(new MediaGalaxyScraper(product, this));
         return crawlJobs;

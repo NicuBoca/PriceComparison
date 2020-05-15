@@ -10,13 +10,9 @@ import java.util.*;
 import static org.apache.commons.lang3.StringUtils.contains;
 
 public class ProductMatching {
-    private static Set<String> exceptions;
-    private static Set<String> stopwords;
-    private static final List<String> specialChars = Arrays.asList(",", "-", "\"", "'", "!", "(", ")", "{", "}", "[", "]", "^",
-            "~", "*", "?", ":", "\\(o\\)", "\u00B0", "\\(C\\)", "\u00a9", "\\(R\\)", "\u00AE", "\\(TM\\)", "\u2122");
 
     public static double getSimilarityForProductMatching(Product p1, Product p2) {
-        setStopwordsAndExceptions();
+        WordFilter wordFilter = new WordFilter();
         double precision = 0.8;
 
 //        String name1 = "Laptop ultraportabil ASUS ZenBook Pro Duo UX581GV cu procesor Intel® Core™ i9-9980HK pana la 5.00 GHz Coffee Lake, 15.6\", 4K, 32GB, 1TB SSD M.2, NVIDIA GeForce RTX 2060 6GB, Windows 10 Pro, Celestial Blue";
@@ -57,10 +53,8 @@ public class ProductMatching {
             }
         }
 
-        for (String ch : specialChars) {
-            prodName1 = prodName1.replace(ch, " ");
-            prodName2 = prodName2.replace(ch, " ");
-        }
+        prodName1 = wordFilter.removeSpecialChars(prodName1);
+        prodName2 = wordFilter.removeSpecialChars(prodName2);
 
 //        System.out.println(prodName1);
 //        System.out.println(prodName2);
@@ -68,8 +62,8 @@ public class ProductMatching {
         String[] splitStr1 = prodName1.split("\\s+");
         String[] splitStr2 = prodName2.split("\\s+");
 
-        Set<String> setProd1 = filterForStopwordsAndExceptions(splitStr1);
-        Set<String> setProd2 = filterForStopwordsAndExceptions(splitStr2);
+        Set<String> setProd1 = wordFilter.filterForStopwordsAndExceptions(splitStr1);
+        Set<String> setProd2 = wordFilter.filterForStopwordsAndExceptions(splitStr2);
 
 //        System.out.println(setProd1.size());
 //        System.out.println(setProd1);
@@ -97,19 +91,25 @@ public class ProductMatching {
     }
 
     private static double getSimilarityByDifferentWords(double precision, Set<String> setProd1, Set<String> setProd2, double nrCommon, double nrTotalRef) {
-        Set<String> differentWords = new HashSet<String>(setProd1);
+
+        Set<String> differentWords1 = new HashSet<String>(setProd1);
         for (String element : setProd2) {
-            if (!differentWords.add(element)) {
-                differentWords.remove(element);
-            }
+            differentWords1.remove(element);
         }
+        Set<String> differentWords2 = new HashSet<String>(setProd2);
+        for (String element : setProd1) {
+            differentWords2.remove(element);
+        }
+
 //        System.out.println("------------");
-        int diffSize = differentWords.size();
-//        System.out.println("Cuvinte diferite 1-2: " + diffSize);
+//        System.out.println("Cuvinte diferite 1: " + differentWords1);
+//        System.out.println(differentWords);
+//        System.out.println("------------");
+//        System.out.println("Cuvinte diferite 2: " + differentWords2);
 //        System.out.println(differentWords);
 
-        for (String c1 : differentWords) {
-            for (String c2 : differentWords) {
+        for (String c1 : differentWords1) {
+            for (String c2 : differentWords2) {
                 if (!c2.equals(c1) &&
                         c1.length() > 1 && c2.length() > 1 &&
                         contains(c2, c1)) {
@@ -131,39 +131,10 @@ public class ProductMatching {
         }
     }
 
-    private static Set<String> filterForStopwordsAndExceptions(String[] splittedName) {
-        Set<String> result = new HashSet<>();
-        for (String word : splittedName) {
-            if (!stopwords.contains(word) && !exceptions.contains(word)) {
-                result.add(word);
-            }
-        }
-        return result;
-    }
-
     private static boolean getIndexJaccard(String s1, String s2) {
         JaccardSimilarity js = new JaccardSimilarity();
         double indexJaccard = js.apply(s1, s2);
         double precisionJaccard = 0.75;
         return indexJaccard > precisionJaccard;
-    }
-
-    private static void setStopwordsAndExceptions() {
-        Set<String> myExceptions = new HashSet<>();
-        Set<String> myStopwords = new HashSet<>();
-        try {
-            Scanner scanner = new Scanner(new File("src/main/java/com/pricescraper/filter/files/exceptions.txt"));
-            while (scanner.hasNextLine()) {
-                myExceptions.add(scanner.next());
-            }
-            scanner = new Scanner(new File("src/main/java/com/pricescraper/filter/files/stopwords.txt"));
-            while (scanner.hasNextLine()) {
-                myStopwords.add(scanner.next());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        exceptions = myExceptions;
-        stopwords = myStopwords;
     }
 }
