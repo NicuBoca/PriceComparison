@@ -8,14 +8,10 @@ import com.pricescraper.service.ClusterService;
 import com.pricescraper.types.ProductSourceType;
 import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @NoArgsConstructor
 @Component
@@ -63,10 +59,10 @@ public class ClusterServiceImpl implements ClusterService {
          */
 
         int sourcesSize = ProductSourceType.values().length;
-        List<ArrayList<ImmutablePair<Integer, Double>>> clustersPrecision = new ArrayList<>();
-        ArrayList<ImmutablePair<Integer, Double>> sourcesPrecision = new ArrayList<>();
+        List<ArrayList<Map.Entry<Integer, Double>>> clustersPrecision = new ArrayList<>();
+        ArrayList<Map.Entry<Integer, Double>> sourcesPrecision = new ArrayList<>();
         for (int i = 0; i < sourcesSize; i++) {
-            sourcesPrecision.add(new ImmutablePair<>(0, (double) 0));
+            sourcesPrecision.add(new AbstractMap.SimpleEntry<>(0, (double) 0));
         }
         clustersPrecision.add(sourcesPrecision);
 
@@ -74,6 +70,7 @@ public class ClusterServiceImpl implements ClusterService {
         int i = 0;
 
         while (i < productList.size() - 1) {
+            // setez clusterul curent cu un element de referinta
             productList.get(i)
                     .getHistory()
                     .get(0)
@@ -84,20 +81,23 @@ public class ClusterServiceImpl implements ClusterService {
             int index1 = ProductSourceType.valueOf(source1)
                     .ordinal();
             clustersPrecision.get(clusterCount - 1)
-                    .set(index1, new ImmutablePair<>(i, (double) 1));
+                    .set(index1, new AbstractMap.SimpleEntry<>(i, (double) 1));
 
+            // caut urmatoarea pozitie libera (fara cluster setat) in lista de produse
             int j = getNextFreePosition(productList, 0, productList.size());
             while (j < productList.size() - 1) {
                 String source2 = productList.get(j)
                         .getSource()
                         .toString();
 
+                // verific daca cele doua produse de comparat au sursa diferita
                 if (!source1.equals(source2)) {
                     double p = ProductMatching.getSimilarityForProductMatching(productList.get(i), productList.get(j));
+                    // daca cele doua produse au procentul de similaritate peste pragul setat
                     if (p != 0) {
                         int index2 = ProductSourceType.valueOf(source2)
                                 .ordinal();
-                        ImmutablePair<Integer, Double> pair = clustersPrecision.get(clusterCount - 1)
+                        Map.Entry<Integer, Double> pair = clustersPrecision.get(clusterCount - 1)
                                 .get(index2);
 
                         if (p > pair.getValue()) {
@@ -107,7 +107,7 @@ public class ClusterServiceImpl implements ClusterService {
                                     .setCluster(clusterCount);
 
                             clustersPrecision.get(clusterCount - 1)
-                                    .set(index2, new ImmutablePair<>(j, p));
+                                    .set(index2, new AbstractMap.SimpleEntry<>(j, p));
 
                             if (pair.getValue() != 0) {
                                 productList.get(pair.getKey())
@@ -122,9 +122,9 @@ public class ClusterServiceImpl implements ClusterService {
             }
             i = getNextFreePosition(productList, 0, productList.size());
             clusterCount++;
-            ArrayList<ImmutablePair<Integer, Double>> currentSourcesPrecision = new ArrayList<>();
+            ArrayList<Map.Entry<Integer, Double>> currentSourcesPrecision = new ArrayList<>();
             for (int k = 0; k < sourcesSize; k++) {
-                currentSourcesPrecision.add(new ImmutablePair<>(0, (double) 0));
+                currentSourcesPrecision.add(new AbstractMap.SimpleEntry<>(0, (double) 0));
             }
             clustersPrecision.add(currentSourcesPrecision);
         }
@@ -151,14 +151,14 @@ public class ClusterServiceImpl implements ClusterService {
             List<Product> productsFromCluster = new ArrayList<>();
             productCluster.setId(k);
             isSet = false;
-            for (Product product : productListAfterMerge) {
-                if (product.getHistory().get(product.getHistory().size() - 1).getCluster() == k) {
+            for (int i=0; i<productListAfterMerge.size(); i++) {
+                if (productListAfterMerge.get(i).getHistory().get(productListAfterMerge.get(i).getHistory().size() - 1).getCluster() == k) {
                     if (!isSet) {
-                        productCluster.setName(product.getName());
-                        productCluster.setImg(product.getImg());
+                        productCluster.setName(productListAfterMerge.get(i).getName());
+                        productCluster.setImg(productListAfterMerge.get(i).getImg());
                         isSet = true;
                     }
-                    productsFromCluster.add(product);
+                    productsFromCluster.add(productListAfterMerge.get(i));
                 }
             }
 

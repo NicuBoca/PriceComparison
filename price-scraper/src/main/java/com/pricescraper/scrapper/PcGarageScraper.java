@@ -33,7 +33,8 @@ public class PcGarageScraper extends BaseScraper {
         System.out.println("PcGarage searcing for product: " + searchProduct);
         List<Product> productsList = new ArrayList<Product>();
 
-        String searchUrlTest = buildUrl(searchProduct, 1);
+        String productUrlName = searchProduct.replaceAll("\\s+", "%2B");
+        String searchUrlTest = "https://www.pcgarage.ro/cauta/" + productUrlName;
         System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
 
         try {
@@ -60,9 +61,14 @@ public class PcGarageScraper extends BaseScraper {
             int nrOfPages = getNumberOfPages(docTest);
             System.out.println("[PCGARAGE] Numarul de pagini (total): " + nrOfPages);
 
+            String baseUrl = getPageUrl(docTest);
+            if (baseUrl == null) {
+                baseUrl = searchUrlTest;
+            }
+
             if (nrOfPages > 1) {
                 for (int i = 2; i <= nrOfPages; i++) {
-                    String searchUrl = buildUrl(searchProduct, i);
+                    String searchUrl = buildUrl(baseUrl, i);
                     System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
 
                     int rand_time = rand.nextInt(5) + 2;
@@ -139,12 +145,26 @@ public class PcGarageScraper extends BaseScraper {
         return products;
     }
 
-    private String buildUrl(String searchProduct, int pageNumber) {
-        String productUrlName = searchProduct.replaceAll("\\s+", "%2B");
-        String baseUrl = "https://www.pcgarage.ro/cauta/";
-        String finalUrl = baseUrl + productUrlName + "/pagina" + pageNumber;
+    private String buildUrl(String baseUrl, int pageNumber) {
+        String finalUrl = baseUrl + "/pagina" + pageNumber;
         System.out.println(finalUrl);
         return finalUrl;
+    }
+
+    private String getPageUrl(Document doc) {
+        Elements lastPageElement = doc.select("div#container div.main-content div#listing-right div.lr-options div.lr-pagination ul li:last-child a");
+        if (lastPageElement != null) {
+            String lastPageUrl = lastPageElement.attr("href");
+            int endIndex = 0;
+            for (int i = lastPageUrl.length() - 2; i >= 0; i--) {
+                if (lastPageUrl.charAt(i) == '/') {
+                    endIndex = i;
+                    break;
+                }
+            }
+            return lastPageUrl.substring(0, endIndex);
+        }
+        return null;
     }
 
     private int getNumberOfPages(Document doc) {
@@ -168,7 +188,6 @@ public class PcGarageScraper extends BaseScraper {
         } else {
             return 10;
         }
-
     }
 
     private String getProductName(Element prod) {
