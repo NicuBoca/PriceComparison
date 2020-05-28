@@ -2,13 +2,15 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Products</title>
+    <title>Oferte</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap/bootstrap.css}"/>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
     <script type="text/javascript" th:src="@{/js/scripts.js}"></script>
+    <script type="text/javascript" th:src="@{/chart/Chart.js}"></script>
 </head>
 <body>
-
+<div th:replace="fragments/navbar :: navbar(1)"></div>
+<br/>
 <div class="container">
     <div class="card">
         <div class="row justify-content-center">
@@ -32,12 +34,10 @@
 </div>
 <br/>
 <div class="container">
-    <div class="card">
-        <div class="row justify-content-center">
-            <div class="col-12 text-center">
-                <div><span class="font-weight-bold">Număr oferte:</span>&nbsp;
-                    <span th:text="${cluster.nrProducts}"></span></div>
-            </div>
+    <div class="row justify-content-center">
+        <div class="col-12 text-center">
+            <div><span class="font-weight-bold">Număr oferte:</span>&nbsp;
+                <span th:text="${cluster.nrProducts}"></span></div>
         </div>
     </div>
 </div>
@@ -64,8 +64,6 @@
                             <span th:text="${product.history[#lists.size(product.history) - 1].price}"></span>&nbsp;lei
                         </div>
                         <div>
-                            <button class="btn btn-primary btn-sm btn-details disabled">Istoric preț</button>
-                            &nbsp;&nbsp;
                             <a th:href="${product.url}">
                                 <button class="btn btn-primary btn-sm btn-details">Spre magazin</button>
                             </a>
@@ -76,6 +74,15 @@
         </div>
     </div>
 </th:block>
-
+<br/>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 text-center">
+            <button class="btn btn-primary" onclick="toggleHistory()">Vezi istoric preț</button>&nbsp;
+        </div>
+    </div>
+</div>
+<br/>
+<div th:replace="fragments/charts :: historyChart(${cluster})"></div>
 </body>
 </html>

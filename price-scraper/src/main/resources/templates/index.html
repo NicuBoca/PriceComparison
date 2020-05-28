@@ -2,35 +2,32 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Price scraper</title>
+    <title>Comparator de prețuri</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap/bootstrap.css}"/>
     <link rel="stylesheet" th:href="@{/css/style.css}"/>
     <script type="text/javascript" th:src="@{/js/scripts.js}"></script>
 </head>
 <body>
+<div th:replace="fragments/navbar :: navbar(0)"></div>
+<br/>
 <div class="container search-box">
     <div class="row justify-content-center">
         <div class="col-12 col-md-10 col-lg-8">
-
             <form class="card card-sm" th:action="@{/clusters}" method="get">
                 <div class="card-body row no-gutters align-items-center">
                     <div class="col">
                         <input class="form-control form-control-lg form-control-borderless" type="search"
                                placeholder="Introduceți produsul" name="product">
-                    </div>
-                    &nbsp; &nbsp;
+                    </div> &nbsp; &nbsp;
                     <div class="col-auto">
                         <button class="btn btn-lg btn-primary" type="submit" onclick="enableSpinner()">Căutare</button>
                     </div>
                 </div>
             </form>
-
         </div>
     </div>
     <br/><br/>
-    <div class="spinner-border text-primary" id="spinner" role="status">
-        <span class="sr-only">Loading...</span>
-    </div>
+    <div class="spinner-border text-primary" id="spinner" role="status"></div>
 </div>
 </body>
 </html>

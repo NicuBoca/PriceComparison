@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Chart</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap/bootstrap.css}"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div id="history" th:fragment="historyChart(cluster)">
+    <div class="container">
+        <div class="card">
+            <div class="row justify-content-center">
+                <div class="col-8" id="ch">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        let products = [[${cluster.products}]];
+        let nrProducts = [[${cluster.nrProducts}]];
+        for(var i=0; i<nrProducts; i++) {
+            let historySize = products[i].history.length;
+            let dateArray = [];
+            let priceArray = [];
+            for (var j = 0; j < historySize; j++) {
+                dateArray.push(products[i].history[j].date);
+                priceArray.push(products[i].history[j].price);
+            }
+            let node = document.createElement("canvas");
+            node.id = "myChart"+i;
+            document.getElementById("ch").appendChild(node);
+            let c = document.getElementById(node.id);
+            let ctx = c.getContext('2d');
+            let myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dateArray,
+                    datasets: [{
+                        label: products[i].source + ': pret (lei)',
+                        data: priceArray
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+    </script>
+</div>
+
+<script type="text/javascript" th:src="@{/js/scripts.js}"></script>
+<script type="text/javascript" th:src="@{/chart/Chart.js}"></script>
+
+</body>
+</html>

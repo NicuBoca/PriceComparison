@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Navbar</title>
+</head>
+<body>
+<nav class="navbar navbar-dark bg-dark" th:fragment="navbar(searchStatus)">
+    <a class="navbar-brand" href="/">Comparator de prețuri</a>
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <li class="nav-item" th:if="${searchStatus == 1}">
+            <form class="form-inline" th:action="@{/clusters}" method="get">
+                <input class="form-control mr-sm-2" type="search" placeholder="Introduceți produsul" name="product">
+                <button class="btn btn-primary my-2 my-sm-0" type="submit" onclick="enableSpinnerNavbar()">Căutare</button>
+                &nbsp;&nbsp;
+                <span class="spinner-border text-primary" id="spinner-navbar" role="status"></span>
+            </form>
+        </li>
+    </ul>
+    <a href="/about">
+        <button class="btn btn-primary my-2 my-sm-0" type="submit">Despre</button>
+    </a>
+</nav>
+</body>
+</html>
