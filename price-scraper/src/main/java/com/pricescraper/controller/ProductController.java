@@ -29,15 +29,16 @@ public class ProductController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/clusters")
     public String getClusters(@RequestParam String product, Model model) throws IOException {
-        List<Product> productList = crawlerService.getProductList(product.toLowerCase());
-        if (productList != null) {
-            clusterService.computeProductClusterList(productList);
-            List<ProductCluster> productClusterList = clusterService.getProductClusterList();
-            model.addAttribute("clusters", productClusterList);
-            return "clusters_view";
-        } else {
-            return "no_result";
+        if (!product.equals("")) {
+            List<Product> productList = crawlerService.getProductList(product.toLowerCase());
+            if (productList != null) {
+                clusterService.computeProductClusterList(productList);
+                List<ProductCluster> productClusterList = clusterService.getProductClusterList();
+                model.addAttribute("clusters", productClusterList);
+                return "clusters_view";
+            }
         }
+        return "no_result";
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/clusters/products/{id}")

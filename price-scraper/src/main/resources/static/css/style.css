@@ -22,12 +22,16 @@ body {
     margin-top: 10px;
 }
 
+.nav-input {
+    width: 300px !important;
+}
+
 #spinner {
     margin-left: 50%;
     visibility: hidden;
 }
 
-#spinner-navbar {
+#spinnerNavbar {
     visibility: hidden;
 }
 

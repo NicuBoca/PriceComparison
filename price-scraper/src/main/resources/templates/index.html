@@ -16,11 +16,15 @@
             <form class="card card-sm" th:action="@{/clusters}" method="get">
                 <div class="card-body row no-gutters align-items-center">
                     <div class="col">
-                        <input class="form-control form-control-lg form-control-borderless" type="search"
-                               placeholder="Introduceți produsul" name="product">
+                        <input type="search" class="form-control form-control-lg form-control-borderless"
+                               id="searchInput"
+                               placeholder="Introduceți produsul" name="product" onkeyup="checkInput()"
+                               required="required">
                     </div> &nbsp; &nbsp;
                     <div class="col-auto">
-                        <button class="btn btn-lg btn-primary" type="submit" onclick="enableSpinner()">Căutare</button>
+                        <button type="submit" class="btn btn-lg btn-primary" id="submitBtn" onclick="enableSpinner()"
+                                disabled>Căutare
+                        </button>
                     </div>
                 </div>
             </form>

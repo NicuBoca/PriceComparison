@@ -183,10 +183,10 @@ public class PcGarageScraper extends BaseScraper {
             lastPageNumber = lastPageNumber.reverse();
             nrOfPages = Integer.parseInt(String.valueOf(lastPageNumber));
         }
-        if (nrOfPages < 10) {
+        if (nrOfPages < 5) {
             return nrOfPages;
         } else {
-            return 10;
+            return 5;
         }
     }
 

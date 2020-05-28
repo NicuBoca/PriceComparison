@@ -3,7 +3,15 @@ function enableSpinner() {
 }
 
 function enableSpinnerNavbar() {
-    document.getElementById("spinner-navbar").style.visibility = "visible";
+    document.getElementById("spinnerNavbar").style.visibility = "visible";
+}
+
+function checkInput() {
+    if(document.getElementById("searchInput").value==="") {
+        document.getElementById('submitBtn').disabled = true;
+    } else {
+        document.getElementById('submitBtn').disabled = false;
+    }
 }
 
 function toggleHistory() {

@@ -10,15 +10,18 @@
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         <li class="nav-item" th:if="${searchStatus == 1}">
             <form class="form-inline" th:action="@{/clusters}" method="get">
-                <input class="form-control mr-sm-2" type="search" placeholder="Introduceți produsul" name="product">
-                <button class="btn btn-primary my-2 my-sm-0" type="submit" onclick="enableSpinnerNavbar()">Căutare</button>
+                <input type="search" class="form-control mr-sm-2 nav-input" id="searchInput" placeholder="Introduceți produsul"
+                       name="product" onkeyup="checkInput()" required="required">
+                <button type="submit" class="btn btn-primary my-2 my-sm-0" id="submitBtn"
+                        onclick="enableSpinnerNavbar()" disabled>Căutare
+                </button>
                 &nbsp;&nbsp;
-                <span class="spinner-border text-primary" id="spinner-navbar" role="status"></span>
+                <span class="spinner-border text-primary" id="spinnerNavbar" role="status"></span>
             </form>
         </li>
     </ul>
     <a href="/about">
-        <button class="btn btn-primary my-2 my-sm-0" type="submit">Despre</button>
+        <button class="btn btn-primary my-2 my-sm-0">Despre</button>
     </a>
 </nav>
 </body>
