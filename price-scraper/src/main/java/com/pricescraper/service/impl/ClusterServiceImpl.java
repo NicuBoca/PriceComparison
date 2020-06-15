@@ -26,7 +26,6 @@ public class ClusterServiceImpl implements ClusterService {
     @Override
     public void computeProductClusterList(List<Product> productList) {
         int nrClusters = clustering(productList);
-
         for (Product product : productList) {
             productDao.insertProductAndUpdateHistory(product);
         }
@@ -99,7 +98,7 @@ public class ClusterServiceImpl implements ClusterService {
                                 .ordinal();
                         Map.Entry<Integer, Double> pair = clustersPrecision.get(clusterCount - 1)
                                 .get(index2);
-
+                        // daca similaritatea curenta > similaritatea anterioara de la acelasi magazin => actualizeaza
                         if (p > pair.getValue()) {
                             productList.get(j)
                                     .getHistory()
@@ -128,15 +127,18 @@ public class ClusterServiceImpl implements ClusterService {
             }
             clustersPrecision.add(currentSourcesPrecision);
         }
-        if (productList.get(productList.size() - 1)
-                .getHistory()
-                .get(0)
-                .getCluster() == 0) {
-            productList.get(productList.size() - 1)
+
+        if(productList.size() > 0) {
+            if (productList.get(productList.size() - 1)
                     .getHistory()
                     .get(0)
-                    .setCluster(clusterCount);
-            clusterCount++;
+                    .getCluster() == 0) {
+                productList.get(productList.size() - 1)
+                        .getHistory()
+                        .get(0)
+                        .setCluster(clusterCount);
+                clusterCount++;
+            }
         }
         return clusterCount;
     }

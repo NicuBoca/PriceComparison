@@ -4,6 +4,7 @@ import com.pricescraper.model.Product;
 import com.pricescraper.model.ProductHistory;
 import com.pricescraper.service.CrawlerService;
 import com.pricescraper.types.ProductSourceType;
+import lombok.extern.java.Log;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+@Log
 public class PcGarageScraper extends BaseScraper {
 
     public PcGarageScraper(String product, CrawlerService engine) {
@@ -30,7 +32,7 @@ public class PcGarageScraper extends BaseScraper {
         Connection.Response response = null;
         int statusCode;
 
-        System.out.println("PcGarage searcing for product: " + searchProduct);
+        log.info(this.getClass().getSimpleName() + " searcing for product: " + searchProduct);
         List<Product> productsList = new ArrayList<Product>();
 
         String productUrlName = searchProduct.replaceAll("\\s+", "%2B");
@@ -59,7 +61,7 @@ public class PcGarageScraper extends BaseScraper {
             productsList.addAll(productsCurrentPage1);
 
             int nrOfPages = getNumberOfPages(docTest);
-            System.out.println("[PCGARAGE] Numarul de pagini (total): " + nrOfPages);
+//            System.out.println("[PCGARAGE] Numarul de pagini (total): " + nrOfPages);
 
             String baseUrl = getPageUrl(docTest);
             if (baseUrl == null) {
@@ -69,6 +71,7 @@ public class PcGarageScraper extends BaseScraper {
             if (nrOfPages > 1) {
                 for (int i = 2; i <= nrOfPages; i++) {
                     String searchUrl = buildUrl(baseUrl, i);
+                    log.info(this.getClass().getSimpleName() + " current URL: " + searchUrl);
                     System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
 
                     int rand_time = rand.nextInt(5) + 2;
@@ -90,7 +93,7 @@ public class PcGarageScraper extends BaseScraper {
                     productsList.addAll(productsCurrentPage);
                 }
             }
-            System.out.println("[PCGARAGE] Numarul de produse: " + productsList.size());
+//            System.out.println("[PCGARAGE] Numarul de produse: " + productsList.size());
             return productsList;
         }
     }
@@ -146,9 +149,7 @@ public class PcGarageScraper extends BaseScraper {
     }
 
     private String buildUrl(String baseUrl, int pageNumber) {
-        String finalUrl = baseUrl + "/pagina" + pageNumber;
-        System.out.println(finalUrl);
-        return finalUrl;
+        return baseUrl + "/pagina" + pageNumber;
     }
 
     private String getPageUrl(Document doc) {
@@ -183,16 +184,11 @@ public class PcGarageScraper extends BaseScraper {
             lastPageNumber = lastPageNumber.reverse();
             nrOfPages = Integer.parseInt(String.valueOf(lastPageNumber));
         }
-        if (nrOfPages < 5) {
-            return nrOfPages;
-        } else {
-            return 5;
-        }
+        return Math.min(nrOfPages, 5);
     }
 
     private String getProductName(Element prod) {
-        String prodName = prod.select("div.product-box div.pb-specs-container div.pb-name a").attr("title");
-        return prodName;
+        return prod.select("div.product-box div.pb-specs-container div.pb-name a").attr("title");
     }
 
     private double getProductPrice(Element prod) {
@@ -217,14 +213,12 @@ public class PcGarageScraper extends BaseScraper {
     }
 
     private String getProductUrl(Element prod) {
-        String prodUrl = prod.select("div.product-box div.pb-specs-container div.pb-name a").attr("href");
-        return prodUrl;
+        return prod.select("div.product-box div.pb-specs-container div.pb-name a").attr("href");
     }
 
     private String getProductImg(Element prod) {
         Elements prodImgElem = prod.select("div.product-box div.pb-image a");
-        String prodImg = prodImgElem.select("img").attr("src");
-        return prodImg;
+        return prodImgElem.select("img").attr("src");
     }
 
 }

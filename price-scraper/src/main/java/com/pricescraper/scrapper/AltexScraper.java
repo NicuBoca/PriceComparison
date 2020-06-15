@@ -4,6 +4,7 @@ import com.pricescraper.model.Product;
 import com.pricescraper.model.ProductHistory;
 import com.pricescraper.service.CrawlerService;
 import com.pricescraper.types.ProductSourceType;
+import lombok.extern.java.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Log
 public class AltexScraper extends BaseScraper {
 
     public AltexScraper(String product, CrawlerService engine) {
@@ -25,7 +27,7 @@ public class AltexScraper extends BaseScraper {
     @Override
     public List<Product> scrap(String searchProduct) {
 
-        System.out.println("Altex searcing for product: " + searchProduct);
+        log.info(this.getClass().getSimpleName() + " searcing for product: " + searchProduct);
         List<Product> productsList = new ArrayList<Product>();
         boolean prodExists = true;
         int pageCounter = 1;
@@ -34,6 +36,7 @@ public class AltexScraper extends BaseScraper {
 
             while (prodExists) {
                 String searchUrl = buildUrl(searchProduct, pageCounter);
+                log.info(this.getClass().getSimpleName() + " current URL: " + searchUrl);
                 URL obj = new URL(searchUrl);
                 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
                 con.setRequestMethod("GET");
@@ -58,8 +61,8 @@ public class AltexScraper extends BaseScraper {
             e.printStackTrace();
         }
 
-        System.out.println("[ALTEX] Numarul de pagini (parcurse): " + (pageCounter - 1));
-        System.out.println("[ALTEX] Numarul de produse: " + productsList.size());
+//        System.out.println("[ALTEX] Numarul de pagini (parcurse): " + (pageCounter - 1));
+//        System.out.println("[ALTEX] Numarul de produse: " + productsList.size());
         return productsList;
     }
 
@@ -111,16 +114,13 @@ public class AltexScraper extends BaseScraper {
     private String buildUrl(String searchProduct, int pageNumber) {
         String productUrlName = searchProduct.replaceAll("\\s+", "%2520");
         String baseUrl = "https://fenrir.altex.ro/catalog/search/";
-        String finalUrl = baseUrl + productUrlName + "?page=" + pageNumber;
-        System.out.println(finalUrl);
-        return finalUrl;
+        return baseUrl + productUrlName + "?page=" + pageNumber;
     }
 
     private String getProductUrl(JSONObject prodItem) {
         String prodUrlBase = "https://altex.ro/";
         String prodUrlPath = prodItem.getString("url_key");
-        String prodUrl = prodUrlBase + prodUrlPath;
-        return prodUrl;
+        return prodUrlBase + prodUrlPath;
     }
 
     private String getProductImg(JSONObject prodItem) {
@@ -129,8 +129,7 @@ public class AltexScraper extends BaseScraper {
         String prodImgPathMiddlePart = "/16fa6a9aef7ffd6209d5fd9338ffa0b1";
         String prodImgPathSecondPart = prodImgPath.substring(26);
         String prodImgPathFirstPart = prodImgPath.replace(prodImgPathSecondPart, "");
-        String prodImg = prodImgBase + prodImgPathFirstPart + prodImgPathMiddlePart + prodImgPathSecondPart;
-        return prodImg;
+        return prodImgBase + prodImgPathFirstPart + prodImgPathMiddlePart + prodImgPathSecondPart;
     }
 
 }

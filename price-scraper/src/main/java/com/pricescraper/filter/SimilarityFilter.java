@@ -3,19 +3,16 @@ package com.pricescraper.filter;
 import com.pricescraper.model.Product;
 import org.apache.commons.text.similarity.JaccardSimilarity;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.lang.reflect.Array;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SimilarityFilter {
 
     public static List<Product> getTheMostSimilarProducts(List<Product> products, String searchProduct) {
-        WordFilter wordFilter = new WordFilter();
         List<Product> filteredProducts = new ArrayList<Product>();
-
         String[] arrOfSearchName = searchProduct.split(" ");
-        Set<String> setOfSearchName = wordFilter.filterForStopwordsAndExceptions(arrOfSearchName);
+        Set<String> setOfSearchName = Arrays.stream(arrOfSearchName).collect(Collectors.toSet());
         int arrSearchNameLength = arrOfSearchName.length;
         double[] similarityRate = new double[arrSearchNameLength];
         int prodListLength = products.size();

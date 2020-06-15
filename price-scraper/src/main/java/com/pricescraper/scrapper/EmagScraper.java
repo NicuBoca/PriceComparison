@@ -4,6 +4,7 @@ import com.pricescraper.model.Product;
 import com.pricescraper.model.ProductHistory;
 import com.pricescraper.service.CrawlerService;
 import com.pricescraper.types.ProductSourceType;
+import lombok.extern.java.Log;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+@Log
 public class EmagScraper extends BaseScraper {
 
     public EmagScraper(String product, CrawlerService engine) {
@@ -30,7 +32,7 @@ public class EmagScraper extends BaseScraper {
         Connection.Response response = null;
         int statusCode;
 
-        System.out.println("Emag searcing for product: " + searchProduct);
+        log.info(this.getClass().getSimpleName() + " searcing for product: " + searchProduct);
         List<Product> productsList = new ArrayList<Product>();
 
         String searchUrlTest = buildUrl(searchProduct, 1);
@@ -58,11 +60,12 @@ public class EmagScraper extends BaseScraper {
             productsList.addAll(productsCurrentPage1);
 
             int nrOfPages = getNumberOfPages(docTest);
-            System.out.println("[EMAG] Numarul de pagini (total): " + nrOfPages);
+//            System.out.println("[EMAG] Numarul de pagini (total): " + nrOfPages);
 
             if (nrOfPages > 1) {
                 for (int i = 2; i <= nrOfPages; i++) {
                     String searchUrl = buildUrl(searchProduct, i);
+                    log.info(this.getClass().getSimpleName() + " current URL: " + searchUrl);
                     System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
 
                     int rand_time = rand.nextInt(3) + 1;
@@ -84,7 +87,7 @@ public class EmagScraper extends BaseScraper {
                     productsList.addAll(productsCurrentPage);
                 }
             }
-            System.out.println("[EMAG] Numarul de produse: " + productsList.size());
+//            System.out.println("[EMAG] Numarul de produse: " + productsList.size());
             return productsList;
         }
     }
@@ -130,9 +133,7 @@ public class EmagScraper extends BaseScraper {
     private String buildUrl(String searchProduct, int pageNumber) {
         String productUrlName = searchProduct.replaceAll("\\s+", "%20");
         String baseUrl = "https://www.emag.ro/search/vendor/emag/";
-        String finalUrl = baseUrl + productUrlName + "/p" + pageNumber;
-        System.out.println(finalUrl);
-        return finalUrl;
+        return baseUrl + productUrlName + "/p" + pageNumber;
     }
 
     private int getNumberOfPages(Document doc) {
@@ -147,11 +148,7 @@ public class EmagScraper extends BaseScraper {
                 }
             }
         }
-        if (nrOfPages < 10) {
-            return nrOfPages;
-        } else {
-            return 10;
-        }
+        return Math.min(nrOfPages, 10);
     }
 
     private String getProductName(Element prod) {
@@ -186,13 +183,11 @@ public class EmagScraper extends BaseScraper {
     }
 
     private String getProductUrl(Element prod) {
-        String prodUrl = prod.select("div.card-section-mid h2.card-body a.product-title").attr("href");
-        return prodUrl;
+        return prod.select("div.card-section-mid h2.card-body a.product-title").attr("href");
     }
 
     private String getProductImg(Element prod) {
-        String prodImg = prod.select("div.card-section-top div.card-heading a.thumbnail-wrapper div.thumbnail img.lozad").attr("data-src");
-        return prodImg;
+        return prod.select("div.card-section-top div.card-heading a.thumbnail-wrapper div.thumbnail img.lozad").attr("data-src");
     }
 
 }

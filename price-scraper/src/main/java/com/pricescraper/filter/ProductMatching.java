@@ -50,6 +50,11 @@ public class ProductMatching {
             int indexEnd = prodName2.indexOf(",");
             if (indexEnd != -1) {
                 prodName2 = prodName2.substring(0, indexEnd);
+                if(prodName2.length() < prodName1.length()) {
+                    String temp = prodName1;
+                    prodName1 = prodName2;
+                    prodName2 = temp;
+                }
             }
         }
 
