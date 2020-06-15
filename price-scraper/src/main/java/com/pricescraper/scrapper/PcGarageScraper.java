@@ -4,7 +4,7 @@ import com.pricescraper.model.Product;
 import com.pricescraper.model.ProductHistory;
 import com.pricescraper.service.CrawlerService;
 import com.pricescraper.types.ProductSourceType;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-@Log
+@Slf4j
 public class PcGarageScraper extends BaseScraper {
 
     public PcGarageScraper(String product, CrawlerService engine) {
@@ -37,6 +37,7 @@ public class PcGarageScraper extends BaseScraper {
 
         String productUrlName = searchProduct.replaceAll("\\s+", "%2B");
         String searchUrlTest = "https://www.pcgarage.ro/cauta/" + productUrlName;
+        log.info(this.getClass().getSimpleName() + " current URL: " + searchUrlTest);
         System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
 
         try {
@@ -45,7 +46,7 @@ public class PcGarageScraper extends BaseScraper {
                     .timeout(30 * 1000)
                     .execute();
         } catch (IOException e) {
-            System.out.println("PCGARAGE: " + e);
+            log.error(this.getClass().getSimpleName() + ": " + e);
         }
 
         assert response != null;
@@ -61,7 +62,6 @@ public class PcGarageScraper extends BaseScraper {
             productsList.addAll(productsCurrentPage1);
 
             int nrOfPages = getNumberOfPages(docTest);
-//            System.out.println("[PCGARAGE] Numarul de pagini (total): " + nrOfPages);
 
             String baseUrl = getPageUrl(docTest);
             if (baseUrl == null) {
@@ -70,15 +70,15 @@ public class PcGarageScraper extends BaseScraper {
 
             if (nrOfPages > 1) {
                 for (int i = 2; i <= nrOfPages; i++) {
-                    String searchUrl = buildUrl(baseUrl, i);
+                    String searchUrl = buildSearchUrl(baseUrl, i);
                     log.info(this.getClass().getSimpleName() + " current URL: " + searchUrl);
                     System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
 
-                    int rand_time = rand.nextInt(5) + 2;
+                    int rand_time = rand.nextInt(4) + 2;
                     try {
                         TimeUnit.SECONDS.sleep(rand_time);
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        log.error(this.getClass().getSimpleName() + ": " + e);
                     }
 
                     Document doc = Jsoup.connect(searchUrl)
@@ -93,7 +93,6 @@ public class PcGarageScraper extends BaseScraper {
                     productsList.addAll(productsCurrentPage);
                 }
             }
-//            System.out.println("[PCGARAGE] Numarul de produse: " + productsList.size());
             return productsList;
         }
     }
@@ -102,20 +101,10 @@ public class PcGarageScraper extends BaseScraper {
         List<Product> products = new ArrayList<>();
         Elements list = doc.select("div#content-wrapper div#listing-right div.grid-products div.product-box-container");
 
-        String fullCategory = doc.select("div#container div.main-content nav.breadcrumbs").text();
-        String category = fullCategory.substring(fullCategory.lastIndexOf("»") + 2);
-        boolean categoryIsOk = false;
-        if (!category.equals("") && !category.toLowerCase().equals(searchProduct)) {
-            categoryIsOk = true;
-        }
-
         for (Element prod : list) {
             try {
 
                 String prodName = getProductName(prod);
-                if (categoryIsOk) {
-                    prodName += " [" + category + "]";
-                }
 
                 double prodPrice = getProductPrice(prod);
                 int prodStock = getProductStock(prod);
@@ -142,13 +131,13 @@ public class PcGarageScraper extends BaseScraper {
                 products.add(newProduct);
 
             } catch (Exception e) {
-                System.out.println("Error PcGarage : " + e.getMessage());
+                log.error(this.getClass().getSimpleName() + ": " + e);
             }
         }
         return products;
     }
 
-    private String buildUrl(String baseUrl, int pageNumber) {
+    private String buildSearchUrl(String baseUrl, int pageNumber) {
         return baseUrl + "/pagina" + pageNumber;
     }
 

@@ -35,8 +35,7 @@ public class CrawlerServiceImpl implements CrawlerService {
         }
         log.info("Crawl finished!");
         if (this.productList.size() > 0) {
-            List<Product> productListFiltered = SimilarityFilter.getTheMostSimilarProducts(productList, searchProduct);
-            return productListFiltered;
+            return SimilarityFilter.getTheMostSimilarProducts(productList, searchProduct);
         } else {
             return null;
         }
