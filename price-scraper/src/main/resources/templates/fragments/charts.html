@@ -23,9 +23,13 @@
             let historySize = products[i].history.length;
             let dateArray = [];
             let priceArray = [];
-            for (var j = 0; j < historySize; j++) {
-                dateArray.push(products[i].history[j].date);
-                priceArray.push(products[i].history[j].price);
+            dateArray.push(products[i].history[0].date);
+            priceArray.push(products[i].history[0].price);
+            for (var j = 1; j < historySize; j++) {
+                if(products[i].history[j].date !== products[i].history[j-1].date) {
+                    dateArray.push(products[i].history[j].date);
+                    priceArray.push(products[i].history[j].price);
+                }
             }
             let node = document.createElement("canvas");
             node.id = "myChart"+i;

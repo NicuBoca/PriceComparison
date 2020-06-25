@@ -10,6 +10,24 @@
 <body>
 <div th:replace="fragments/navbar :: navbar(1)"></div>
 <br/>
+<th:block th:if="${suggestion != ''}">
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <form class="form-inline" th:action="@{/clusters}" method="get">
+                    <span class="font-weight-bold">Ați dorit să scrieți:</span>&nbsp;
+                    <span th:text="${suggestion}"></span>?&nbsp;
+                    <input type="hidden" class="form-control mr-sm-2 nav-input" id="searchInput"
+                           name="product" th:value="${suggestion}">
+                    <button type="submit" class="btn btn-outline-primary btn-sm" id="submitBtn"
+                            onclick="enableSpinnerNavbar()">DA
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
+<br/>
 <th:block th:each="cluster : ${clusters}">
     <div class="container">
         <div class="card">

@@ -1,6 +1,7 @@
 package com.pricescraper.controller;
 
 import com.pricescraper.dao.ProductDao;
+import com.pricescraper.filter.SimilarityFilter;
 import com.pricescraper.model.Product;
 import com.pricescraper.model.ProductCluster;
 import com.pricescraper.service.ClusterService;
@@ -18,8 +19,6 @@ import java.util.List;
 
 @Controller
 public class ProductController {
-    @Autowired
-    ProductDao productDao;
 
     @Autowired
     private CrawlerService crawlerService;
@@ -32,6 +31,8 @@ public class ProductController {
         if (!product.equals("")) {
             List<Product> productList = crawlerService.getProductList(product.toLowerCase());
             if (productList != null) {
+                String suggestion = SimilarityFilter.getSearchSuggestion(productList.get(0), product.toLowerCase());
+                model.addAttribute("suggestion", suggestion);
                 clusterService.computeProductClusterList(productList);
                 List<ProductCluster> productClusterList = clusterService.getProductClusterList();
                 model.addAttribute("clusters", productClusterList);

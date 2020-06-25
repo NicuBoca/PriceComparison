@@ -1,11 +1,9 @@
 package com.pricescraper.filter;
 
 import com.pricescraper.model.Product;
-import org.apache.commons.text.similarity.JaccardSimilarity;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.apache.commons.lang3.StringUtils.contains;
 
@@ -136,10 +134,4 @@ public class ProductMatching {
         }
     }
 
-    private static boolean getIndexJaccard(String s1, String s2) {
-        JaccardSimilarity js = new JaccardSimilarity();
-        double indexJaccard = js.apply(s1, s2);
-        double precisionJaccard = 0.75;
-        return indexJaccard > precisionJaccard;
-    }
 }

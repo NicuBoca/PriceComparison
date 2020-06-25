@@ -11,16 +11,17 @@ public class SimilarityFilter {
 
     public static List<Product> getTheMostSimilarProducts(List<Product> products, String searchProduct) {
         List<Product> filteredProducts = new ArrayList<Product>();
-        String[] arrOfSearchName = searchProduct.split(" ");
-        Set<String> setOfSearchName = Arrays.stream(arrOfSearchName).collect(Collectors.toSet());
+        String[] arrOfSearchName = searchProduct.split("\\s+");
+        arrOfSearchName = Arrays.stream(arrOfSearchName).distinct().toArray(String[]::new);
         int arrSearchNameLength = arrOfSearchName.length;
         double[] similarityRate = new double[arrSearchNameLength];
+        String[] similarString = new String[arrSearchNameLength];
         int prodListLength = products.size();
         double[] avgSimilarity = new double[prodListLength];
 
         int counter = 0;
         for (Product product : products) {
-            avgSimilarity[counter] = getAvgSearchNameMatching(product.getName(), setOfSearchName, similarityRate);
+            avgSimilarity[counter] = getAvgSearchNameMatching(product.getName(), arrOfSearchName, arrSearchNameLength, similarityRate, similarString);
             counter++;
         }
 
@@ -36,31 +37,48 @@ public class SimilarityFilter {
         return filteredProducts;
     }
 
-    private static double getAvgSearchNameMatching(String productName, Set<String> setOfSearchName, double[] similarityRate) {
+    public static String getSearchSuggestion(Product product, String searchProduct) {
+        String[] arrOfSearchName = searchProduct.split("\\s+");
+        arrOfSearchName = Arrays.stream(arrOfSearchName).distinct().toArray(String[]::new);
+        int arrSearchNameLength = arrOfSearchName.length;
+        double[] similarityRate = new double[arrSearchNameLength];
+        String[] similarString = new String[arrSearchNameLength];
+        String suggestion = "";
+
+        double sim = getAvgSearchNameMatching(product.getName(), arrOfSearchName, arrSearchNameLength, similarityRate, similarString);
+        if (sim != 1) {
+            for (int i = 0; i < arrSearchNameLength; i++) {
+                suggestion = suggestion + similarString[i] + " ";
+            }
+        }
+
+        return suggestion;
+    }
+
+    private static double getAvgSearchNameMatching(String productName, String[] arrOfSearchName, int arrSearchNameLength, double[] similarityRate, String[] similarString) {
         JaccardSimilarity js = new JaccardSimilarity();
         productName = productName.toLowerCase();
-        String[] arrOfProductName = productName.split(" ");
-        List<String> listOfSearchName = new ArrayList<>(setOfSearchName);
-        int listSearchNameLength = listOfSearchName.size();
-        double[] currentSimilarityRate = new double[listSearchNameLength];
+        String[] arrOfProductName = productName.split("\\s+");
+        double[] currentSimilarityRate = new double[arrSearchNameLength];
 
-        for (int i = 0; i < listSearchNameLength; i++) {
+        for (int i = 0; i < arrSearchNameLength; i++) {
             for (String s : arrOfProductName) {
-                double similarity = js.apply(listOfSearchName.get(i), s);
+                double similarity = js.apply(arrOfSearchName[i], s);
                 if (similarity > currentSimilarityRate[i]) {
                     currentSimilarityRate[i] = similarity;
                     if (currentSimilarityRate[i] > similarityRate[i]) {
                         similarityRate[i] = similarity;
+                        similarString[i] = s;
                     }
                 }
             }
         }
 
         double sum = 0;
-        for (int k = 0; k < listSearchNameLength; k++) {
+        for (int k = 0; k < arrSearchNameLength; k++) {
             sum += currentSimilarityRate[k];
         }
-        return sum / listSearchNameLength;
+        return sum / arrSearchNameLength;
     }
 
 }
