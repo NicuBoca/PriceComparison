@@ -41,9 +41,8 @@ public class ProductDaoImpl implements ProductDao {
         query.addCriteria(new Criteria().andOperator(
                 Criteria.where("name").is(product.getName()),
                 Criteria.where("source").is(product.getSource())));
-
-        Update update = new Update().addToSet("history", product.getHistory().get(0));
-
+        Update update = new Update();
+        update.addToSet("history", product.getHistory().get(0));
         UpdateResult updateResult = mongoTemplate.updateFirst(query, update, COLLECTION);
         if (updateResult.getModifiedCount() == 0) {
             mongoTemplate.insert(product);

@@ -26,7 +26,7 @@ public abstract class AMGScraper extends BaseScraper {
     public List<Product> scrap(String searchProduct) {
 
         log.info(this.getClass().getSimpleName() + " searcing for product: " + searchProduct);
-        List<Product> productsList = new ArrayList<Product>();
+        List<Product> productsList = new ArrayList<>();
         boolean prodExists = true;
         int pageCounter = 1;
 
@@ -40,10 +40,9 @@ public abstract class AMGScraper extends BaseScraper {
                 con.setRequestMethod("GET");
                 con.setRequestProperty("User-Agent", "Mozilla/5.0");
                 int responseCode = con.getResponseCode();
-                //System.out.println("response code: " + responseCode);
 
                 if (responseCode == 200) {
-                    List<Product> productsCurrentPage = extractData(con, searchProduct);
+                    List<Product> productsCurrentPage = extractData(con);
                     if (productsCurrentPage.isEmpty()) {
                         prodExists = false;
                     }
@@ -62,11 +61,11 @@ public abstract class AMGScraper extends BaseScraper {
         return productsList;
     }
 
-    private List<Product> extractData(HttpURLConnection con, String searchProduct) throws IOException {
-        List<Product> products = new ArrayList<Product>();
+    private List<Product> extractData(HttpURLConnection con) throws IOException {
+        List<Product> products = new ArrayList<>();
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
-        StringBuffer response = new StringBuffer();
+        StringBuilder response = new StringBuilder();
 
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
@@ -92,7 +91,7 @@ public abstract class AMGScraper extends BaseScraper {
                     .stock(prodStock)
                     .build();
 
-            List<ProductHistory> productHistories = new ArrayList<ProductHistory>();
+            List<ProductHistory> productHistories = new ArrayList<>();
             productHistories.add(newProductHistory);
             Product newProduct = buildProduct(prodName, prodUrl, prodImg, productHistories);
             products.add(newProduct);

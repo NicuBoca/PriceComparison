@@ -58,7 +58,7 @@ public class PcGarageScraper extends BaseScraper {
         } else {
             Document docTest = response.parse();
 
-            List<Product> productsCurrentPage1 = extractData(docTest, searchProduct);
+            List<Product> productsCurrentPage1 = extractData(docTest);
             productsList.addAll(productsCurrentPage1);
 
             int nrOfPages = getNumberOfPages(docTest);
@@ -86,7 +86,7 @@ public class PcGarageScraper extends BaseScraper {
                             .timeout(300 * 1000)
                             .get();
 
-                    List<Product> productsCurrentPage = extractData(doc, searchProduct);
+                    List<Product> productsCurrentPage = extractData(doc);
                     if (productsCurrentPage.isEmpty()) {
                         break;
                     }
@@ -97,7 +97,7 @@ public class PcGarageScraper extends BaseScraper {
         }
     }
 
-    private List<Product> extractData(Document doc, String searchProduct) {
+    private List<Product> extractData(Document doc) {
         List<Product> products = new ArrayList<>();
         Elements list = doc.select("div#content-wrapper div#listing-right div.grid-products div.product-box-container");
 
@@ -117,7 +117,7 @@ public class PcGarageScraper extends BaseScraper {
                         .date(date)
                         .stock(prodStock)
                         .build();
-                List<ProductHistory> productHistories = new ArrayList<ProductHistory>();
+                List<ProductHistory> productHistories = new ArrayList<>();
                 productHistories.add(newProductHistory);
 
                 Product newProduct = Product.builder()
@@ -171,9 +171,11 @@ public class PcGarageScraper extends BaseScraper {
                 }
             }
             lastPageNumber = lastPageNumber.reverse();
-            nrOfPages = Integer.parseInt(String.valueOf(lastPageNumber));
+            if(!String.valueOf(lastPageNumber).equals("")) {
+                nrOfPages = Integer.parseInt(String.valueOf(lastPageNumber));
+            }
         }
-        return Math.min(nrOfPages, 5);
+        return Math.min(nrOfPages, 2);
     }
 
     private String getProductName(Element prod) {
@@ -192,11 +194,9 @@ public class PcGarageScraper extends BaseScraper {
 
     private int getProductStock(Element prod) {
         String prodStockText = prod.select("div.product-box div.pb-price-container div.pb-availability").text();
-        int prodStock;
+        int prodStock = 1;
         if (prodStockText.equals("Nu este in stoc")) {
             prodStock = 0;
-        } else {
-            prodStock = 1;
         }
         return prodStock;
     }

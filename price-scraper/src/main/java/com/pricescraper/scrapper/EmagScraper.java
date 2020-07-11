@@ -33,7 +33,7 @@ public class EmagScraper extends BaseScraper {
         int statusCode;
 
         log.info(this.getClass().getSimpleName() + " searcing for product: " + searchProduct);
-        List<Product> productsList = new ArrayList<Product>();
+        List<Product> productsList = new ArrayList<>();
 
         String searchUrlTest = buildSearchUrl(searchProduct, 1);
         log.info(this.getClass().getSimpleName() + " current URL: " + searchUrlTest);
@@ -109,7 +109,7 @@ public class EmagScraper extends BaseScraper {
                         .date(date)
                         .stock(prodStock)
                         .build();
-                List<ProductHistory> productHistories = new ArrayList<ProductHistory>();
+                List<ProductHistory> productHistories = new ArrayList<>();
                 productHistories.add(newProductHistory);
 
                 Product newProduct = Product.builder()
@@ -170,13 +170,11 @@ public class EmagScraper extends BaseScraper {
 
     private int getProductStock(Element prod) {
         String prodStockText = prod.select("div.card-section-btm div.card-body p.product-stock-status").text();
-        int prodStock;
+        int prodStock = 1;
         if (prodStockText.equals("stoc epuizat") || prodStockText.equals("indisponibil")) {
             prodStock = 0;
         } else if (prodStockText.isEmpty()) {
             prodStock = 2; // resigilat
-        } else {
-            prodStock = 1;
         }
         return prodStock;
     }

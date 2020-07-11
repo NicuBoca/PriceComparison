@@ -4,19 +4,19 @@ import com.pricescraper.filter.SimilarityFilter;
 import com.pricescraper.model.Product;
 import com.pricescraper.scrapper.*;
 import com.pricescraper.service.CrawlerService;
-import lombok.extern.java.Log;
-import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Component
-@Log
+@Service
+@Slf4j
 public class CrawlerServiceImpl implements CrawlerService {
 
-    List<Product> productList = new ArrayList<Product>();
+    List<Product> productList = new ArrayList<>();
 
     @Override
     public synchronized void addProducts(List<Product> products) {
@@ -34,17 +34,19 @@ public class CrawlerServiceImpl implements CrawlerService {
         while (!executor.isTerminated()) {
         }
         log.info("Crawl finished!");
+        log.info("No. products (before similarity filter): " + productList.size());
         if (this.productList.size() > 0) {
-            return SimilarityFilter.getTheMostSimilarProducts(productList, searchProduct);
-        } else {
-            return null;
+            List<Product> filteredProducts = SimilarityFilter.getTheMostSimilarProducts(productList, searchProduct);
+            log.info("No. products (after similarity filter): " + filteredProducts.size());
+            return filteredProducts;
         }
+        return null;
     }
 
     private List<BaseScraper> initCrawler(String product) {
-        List<BaseScraper> crawlJobs = new ArrayList<BaseScraper>();
+        List<BaseScraper> crawlJobs = new ArrayList<>();
         crawlJobs.add(new EmagScraper(product, this));
-        //crawlJobs.add(new PcGarageScraper(product, this));
+        crawlJobs.add(new PcGarageScraper(product, this));
         crawlJobs.add(new AltexScraper(product, this));
         crawlJobs.add(new MediaGalaxyScraper(product, this));
         return crawlJobs;

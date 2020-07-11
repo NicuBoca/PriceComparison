@@ -7,15 +7,15 @@ import com.pricescraper.model.ProductCluster;
 import com.pricescraper.service.ClusterService;
 import com.pricescraper.types.ProductSourceType;
 import lombok.NoArgsConstructor;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @NoArgsConstructor
-@Component
-@Log
+@Service
+@Slf4j
 public class ClusterServiceImpl implements ClusterService {
 
     @Autowired
@@ -31,6 +31,7 @@ public class ClusterServiceImpl implements ClusterService {
         }
         productClusterList = getProductClusters(productList, nrClusters);
         log.info("Cluster finished!");
+        log.info("No. clusters: " + nrClusters);
     }
 
     @Override
@@ -50,10 +51,10 @@ public class ClusterServiceImpl implements ClusterService {
 
     private int clustering(List<Product> productList) {
         /**
-         * List1<List2<Pair<Integer, Double>>>
+         * List1<List2<Map.Entry<Integer, Double>>>
          *      List1 = lista de clustere
          *      List2 = lista de magazine pentru fiecare cluster (nr. elem = nr. magazine)
-         *      Pair = perechea (index_produs, precizie) pentru a indentifica elementul din cluster de la magazinul
+         *      Map.Entry = perechea (index_produs, precizie) pentru a indentifica elementul din cluster de la magazinul
          *          corespunzator indicelui din List2
          */
 
@@ -98,7 +99,7 @@ public class ClusterServiceImpl implements ClusterService {
                                 .ordinal();
                         Map.Entry<Integer, Double> pair = clustersPrecision.get(clusterCount - 1)
                                 .get(index2);
-                        // daca similaritatea curenta > similaritatea anterioara de la acelasi magazin => actualizeaza
+                        // daca similaritatea curenta > similaritatea anterioara de la acelasi magazin => actualizare
                         if (p > pair.getValue()) {
                             productList.get(j)
                                     .getHistory()
@@ -153,14 +154,14 @@ public class ClusterServiceImpl implements ClusterService {
             List<Product> productsFromCluster = new ArrayList<>();
             productCluster.setId(k);
             isSet = false;
-            for (int i=0; i<productListAfterMerge.size(); i++) {
-                if (productListAfterMerge.get(i).getHistory().get(productListAfterMerge.get(i).getHistory().size() - 1).getCluster() == k) {
+            for (Product product : productListAfterMerge) {
+                if (product.getHistory().get(product.getHistory().size() - 1).getCluster() == k) {
                     if (!isSet) {
-                        productCluster.setName(productListAfterMerge.get(i).getName());
-                        productCluster.setImg(productListAfterMerge.get(i).getImg());
+                        productCluster.setName(product.getName());
+                        productCluster.setImg(product.getImg());
                         isSet = true;
                     }
-                    productsFromCluster.add(productListAfterMerge.get(i));
+                    productsFromCluster.add(product);
                 }
             }
 

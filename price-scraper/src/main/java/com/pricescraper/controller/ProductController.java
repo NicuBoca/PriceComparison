@@ -1,6 +1,5 @@
 package com.pricescraper.controller;
 
-import com.pricescraper.dao.ProductDao;
 import com.pricescraper.filter.SimilarityFilter;
 import com.pricescraper.model.Product;
 import com.pricescraper.model.ProductCluster;

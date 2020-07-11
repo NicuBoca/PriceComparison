@@ -3,14 +3,14 @@ package com.pricescraper.filter;
 import com.pricescraper.model.Product;
 import org.apache.commons.text.similarity.JaccardSimilarity;
 
-import java.lang.reflect.Array;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class SimilarityFilter {
 
     public static List<Product> getTheMostSimilarProducts(List<Product> products, String searchProduct) {
-        List<Product> filteredProducts = new ArrayList<Product>();
+        List<Product> filteredProducts = new ArrayList<>();
         String[] arrOfSearchName = searchProduct.split("\\s+");
         arrOfSearchName = Arrays.stream(arrOfSearchName).distinct().toArray(String[]::new);
         int arrSearchNameLength = arrOfSearchName.length;
@@ -24,7 +24,6 @@ public class SimilarityFilter {
             avgSimilarity[counter] = getAvgSearchNameMatching(product.getName(), arrOfSearchName, arrSearchNameLength, similarityRate, similarString);
             counter++;
         }
-
         double maxAvgSimilarity = Arrays.stream(avgSimilarity)
                 .max()
                 .getAsDouble();
@@ -33,7 +32,6 @@ public class SimilarityFilter {
                 filteredProducts.add(products.get(i));
             }
         }
-
         return filteredProducts;
     }
 
@@ -51,7 +49,6 @@ public class SimilarityFilter {
                 suggestion = suggestion + similarString[i] + " ";
             }
         }
-
         return suggestion;
     }
 
