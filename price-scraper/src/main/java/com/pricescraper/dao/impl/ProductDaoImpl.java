@@ -30,7 +30,9 @@ public class ProductDaoImpl implements ProductDao {
                     Criteria.where("name").is(product.getName()),
                     Criteria.where("source").is(product.getSource())));
             Product currentProduct = mongoTemplate.findOne(query, Product.class);
-            result.add(currentProduct);
+            if(currentProduct != null) {
+                result.add(currentProduct);
+            }
         }
         return result;
     }
@@ -44,7 +46,7 @@ public class ProductDaoImpl implements ProductDao {
         Update update = new Update();
         update.addToSet("history", product.getHistory().get(0));
         UpdateResult updateResult = mongoTemplate.updateFirst(query, update, COLLECTION);
-        if (updateResult.getModifiedCount() == 0) {
+        if (updateResult.wasAcknowledged()) {
             mongoTemplate.insert(product);
         }
     }

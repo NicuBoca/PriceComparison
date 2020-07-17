@@ -103,9 +103,7 @@ public class PcGarageScraper extends BaseScraper {
 
         for (Element prod : list) {
             try {
-
                 String prodName = getProductName(prod);
-
                 double prodPrice = getProductPrice(prod);
                 int prodStock = getProductStock(prod);
                 String prodUrl = getProductUrl(prod);
