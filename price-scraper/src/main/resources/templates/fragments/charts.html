@@ -19,21 +19,34 @@
     <script th:inline="javascript">
         let products = [[${cluster.products}]];
         let nrProducts = [[${cluster.nrProducts}]];
-        for(var i=0; i<nrProducts; i++) {
+        for (var i = 0; i < nrProducts; i++) {
             let historySize = products[i].history.length;
             let dateArray = [];
             let priceArray = [];
             let currentDate = products[i].history[0].date;
-            dateArray.push(currentDate.substr(0,currentDate.indexOf(' ')));
-            priceArray.push(products[i].history[0].price);
+            if (currentDate.length > 10) {
+                currentDate = currentDate.substr(0, currentDate.indexOf(' '));
+            }
+            let currentPrice = products[i].history[0].price;
+            dateArray.push(currentDate);
+            priceArray.push(currentPrice);
             for (var j = 1; j < historySize; j++) {
-                if(products[i].history[j].date !== products[i].history[j-1].date) {
-                    dateArray.push(products[i].history[j].date);
-                    priceArray.push(products[i].history[j].price);
+                let currDate = products[i].history[j].date;
+                if (currDate.length > 10) {
+                    currDate = currDate.substr(0, currDate.indexOf(' '));
+                }
+                let prevDate = products[i].history[j - 1].date;
+                if (prevDate.length > 10) {
+                    prevDate = prevDate.substr(0, prevDate.indexOf(' '));
+                }
+                let currPrice = products[i].history[j].price;
+                if (currDate !== prevDate) {
+                    dateArray.push(currDate);
+                    priceArray.push(currPrice);
                 }
             }
             let node = document.createElement("canvas");
-            node.id = "myChart"+i;
+            node.id = "myChart" + i;
             document.getElementById("ch").appendChild(node);
             let c = document.getElementById(node.id);
             let ctx = c.getContext('2d');
