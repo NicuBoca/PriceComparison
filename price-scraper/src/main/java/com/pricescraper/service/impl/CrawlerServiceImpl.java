@@ -1,6 +1,7 @@
 package com.pricescraper.service.impl;
 
 import com.pricescraper.filter.SimilarityFilter;
+import com.pricescraper.filter.WordFilter;
 import com.pricescraper.model.Product;
 import com.pricescraper.scrapper.*;
 import com.pricescraper.service.CrawlerService;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,7 +18,7 @@ import java.util.concurrent.Executors;
 @Slf4j
 public class CrawlerServiceImpl implements CrawlerService {
 
-    List<Product> productList = new ArrayList<>();
+    private List<Product> productList;
 
     @Override
     public synchronized void addProducts(List<Product> products) {
@@ -25,6 +27,9 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     @Override
     public List<Product> getProductList(String searchProduct) {
+        WordFilter wordFilter = new WordFilter();
+        productList = Collections.synchronizedList(new ArrayList<>());
+        searchProduct = wordFilter.removeSpecialChars(searchProduct);
         List<BaseScraper> crawlJobs = initCrawler(searchProduct);
         ExecutorService executor = Executors.newFixedThreadPool(crawlJobs.size());
         for (BaseScraper scrapper : crawlJobs) {

@@ -46,7 +46,7 @@ public class ProductDaoImpl implements ProductDao {
         Update update = new Update();
         update.addToSet("history", product.getHistory().get(0));
         UpdateResult updateResult = mongoTemplate.updateFirst(query, update, COLLECTION);
-        if (updateResult.wasAcknowledged()) {
+        if (!updateResult.wasAcknowledged()) {
             mongoTemplate.insert(product);
         }
     }
