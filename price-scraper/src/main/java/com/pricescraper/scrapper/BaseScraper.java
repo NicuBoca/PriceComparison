@@ -12,7 +12,7 @@ import java.util.List;
 
 public abstract class BaseScraper implements Runnable {
 
-    protected static final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    protected static final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     protected static final DecimalFormat decimalFormat = new DecimalFormat("0.00");
 
     protected CrawlerService crawlerService;

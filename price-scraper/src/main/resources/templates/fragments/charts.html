@@ -23,7 +23,8 @@
             let historySize = products[i].history.length;
             let dateArray = [];
             let priceArray = [];
-            dateArray.push(products[i].history[0].date);
+            let currentDate = products[i].history[0].date;
+            dateArray.push(currentDate.substr(0,currentDate.indexOf(' ')));
             priceArray.push(products[i].history[0].price);
             for (var j = 1; j < historySize; j++) {
                 if(products[i].history[j].date !== products[i].history[j-1].date) {
