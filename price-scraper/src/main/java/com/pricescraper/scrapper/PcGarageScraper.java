@@ -35,7 +35,7 @@ public class PcGarageScraper extends BaseScraper {
         log.info(this.getClass().getSimpleName() + " searcing for product: " + searchProduct);
         List<Product> productsList = new ArrayList<Product>();
 
-        String productUrlName = searchProduct.replaceAll("\\s+", "%2B");
+        String productUrlName = searchProduct.replaceAll("\\s+", "%20");
         String searchUrlTest = "https://www.pcgarage.ro/cauta/" + productUrlName;
         log.info(this.getClass().getSimpleName() + " current URL: " + searchUrlTest);
         System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
@@ -99,8 +99,7 @@ public class PcGarageScraper extends BaseScraper {
 
     private List<Product> extractData(Document doc) {
         List<Product> products = new ArrayList<>();
-        Elements list = doc.select("div#content-wrapper div#listing-right div.grid-products div.product-box-container");
-
+        Elements list = doc.select("div#content_wrapper div#category_container div#category_content div.grid-products div.product_b_container div.product_box_container");
         for (Element prod : list) {
             try {
                 String prodName = getProductName(prod);
@@ -140,7 +139,7 @@ public class PcGarageScraper extends BaseScraper {
     }
 
     private String getPageUrl(Document doc) {
-        Elements lastPageElement = doc.select("div#container div.main-content div#listing-right div.lr-options div.lr-pagination ul li:last-child a");
+        Elements lastPageElement = doc.select("div#wrapper div#main_wrapper div#website_container div#content_wrapper div#category_container div#category_content div.lr-pagination ul.pagination li:last-child a");
         if (lastPageElement != null) {
             String lastPageUrl = lastPageElement.attr("href");
             int endIndex = 0;
@@ -169,7 +168,7 @@ public class PcGarageScraper extends BaseScraper {
                 }
             }
             lastPageNumber = lastPageNumber.reverse();
-            if(!String.valueOf(lastPageNumber).equals("")) {
+            if (!String.valueOf(lastPageNumber).equals("")) {
                 nrOfPages = Integer.parseInt(String.valueOf(lastPageNumber));
             }
         }
@@ -177,11 +176,11 @@ public class PcGarageScraper extends BaseScraper {
     }
 
     private String getProductName(Element prod) {
-        return prod.select("div.product-box div.pb-specs-container div.pb-name a").attr("title");
+        return prod.select("div.product_box div.product_box_middle div.product_box_name div a").attr("title");
     }
 
     private double getProductPrice(Element prod) {
-        String prodPriceString = prod.select("div.product-box div.pb-price-container div.pb-price p.price").text();
+        String prodPriceString = prod.select("div.product_box div.product_box_bottom div.product_box_price_cart div.product_box_price_container div.pb-price p.price").text();
         prodPriceString = prodPriceString.replace(prodPriceString.substring(prodPriceString.length() - 4), "");
         prodPriceString = prodPriceString.replace(".", "");
         prodPriceString = prodPriceString.replace(",", ".");
@@ -191,7 +190,7 @@ public class PcGarageScraper extends BaseScraper {
     }
 
     private int getProductStock(Element prod) {
-        String prodStockText = prod.select("div.product-box div.pb-price-container div.pb-availability").text();
+        String prodStockText = prod.select("div.product_box div.product_box_bottom div.product_box_price_cart div.product_box_availability").text();
         int prodStock = 1;
         if (prodStockText.equals("Nu este in stoc")) {
             prodStock = 0;
@@ -200,12 +199,17 @@ public class PcGarageScraper extends BaseScraper {
     }
 
     private String getProductUrl(Element prod) {
-        return prod.select("div.product-box div.pb-specs-container div.pb-name a").attr("href");
+        return prod.select("div.product_box div.product_box_middle div.product_box_name div a").attr("href");
     }
 
     private String getProductImg(Element prod) {
-        Elements prodImgElem = prod.select("div.product-box div.pb-image a");
-        return prodImgElem.select("img").attr("src");
+        Elements prodImgElem = prod.select("div.product_box div.product_box_image a");
+        String images = prodImgElem.select("img").attr("srcset");
+        int index = images.indexOf(",");
+        if (index != -1) {
+            return images.substring(0, index);
+        }
+        return images;
     }
 
 }
