@@ -5,6 +5,7 @@ ultrabook
 ultraportabil
 uhd
 ultra hd
+4k
 procesor
 memorie
 cache
@@ -16,3 +17,5 @@ aparat
 camera
 telefon
 smartphone
+win
+windows
